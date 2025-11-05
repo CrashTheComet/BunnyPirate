@@ -1,0 +1,52 @@
+{
+    "version": 1,
+    "name": "BunnyPirateInputActions",
+    "maps": [
+        {
+            "name": "InGame",
+            "id": "8c31167a-333d-4390-ac84-f062cc6aa8d9",
+            "actions": [
+                {
+                    "name": "Action1",
+                    "type": "Button",
+                    "id": "4e939010-07fa-4207-8c0a-033cd1ed92ed",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "abbab744-16cd-45d7-beae-facda6a9f3cc",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Action1",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": [
+        {
+            "name": "Keyboard/Mouse",
+            "bindingGroup": "Keyboard/Mouse",
+            "devices": [
+                {
+                    "devicePath": "<Mouse>",
+                    "isOptional": false,
+                    "isOR": false
+                },
+                {
+                    "devicePath": "<Keyboard>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        }
+    ]
+}
