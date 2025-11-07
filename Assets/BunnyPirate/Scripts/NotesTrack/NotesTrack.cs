@@ -20,8 +20,6 @@ public class NotesTrack : MonoBehaviour
 
   NotePool _notePool;
 
-  float noteTime = 0;
-
   public event Action OnNoteHit;
   public event Action OnBadInput;
   public event Action OnNoteMiss;
@@ -56,13 +54,6 @@ public class NotesTrack : MonoBehaviour
 
     MoveNotesDown(deltaTime);
     Animate(deltaTime);
-    noteTime += deltaTime;
-
-    if (noteTime > 1f)
-    {
-      noteTime = 0;
-      DropNote(Random.Range(0, 3));
-    }
   }
 
   private void DropNote(int i)
@@ -172,7 +163,7 @@ public class NotesTrack : MonoBehaviour
         return;
       }
     }
-    OnNoteMiss?.Invoke();
+    OnBadInput?.Invoke();
   }
 
   private Vector3 PositionOnTrack(int i, float t)

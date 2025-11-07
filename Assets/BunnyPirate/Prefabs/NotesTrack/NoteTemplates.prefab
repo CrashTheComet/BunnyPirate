@@ -82,6 +82,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4670211435352691450, guid: 87fcd9bb138ba6a4ea35827ee9bb4a43, type: 3}
+      propertyPath: m_SortingOrder
+      value: 25
+      objectReference: {fileID: 0}
     - target: {fileID: 8191459697001311552, guid: 87fcd9bb138ba6a4ea35827ee9bb4a43, type: 3}
       propertyPath: m_Name
       value: TriangleNote
@@ -148,6 +152,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 9011939429667296451, guid: 8903c973b66c6494383dd13a45990891, type: 3}
+      propertyPath: m_SortingOrder
+      value: 25
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -166,6 +174,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 6391667275875955196}
     m_Modifications:
+    - target: {fileID: 2396243949130176583, guid: 1ab7110b6457b2744a4defec72004b41, type: 3}
+      propertyPath: m_SortingOrder
+      value: 25
+      objectReference: {fileID: 0}
     - target: {fileID: 4586200961095295896, guid: 1ab7110b6457b2744a4defec72004b41, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
