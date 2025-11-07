@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class NotesTrack : MonoBehaviour
 {
@@ -19,6 +21,10 @@ public class NotesTrack : MonoBehaviour
   NotePool _notePool;
 
   float noteTime = 0;
+
+  public event Action OnNoteHit;
+  public event Action OnBadInput;
+  public event Action OnNoteMiss;
 
   void Awake()
   {
@@ -52,7 +58,7 @@ public class NotesTrack : MonoBehaviour
     Animate(deltaTime);
     noteTime += deltaTime;
 
-    if (noteTime > 0.2f)
+    if (noteTime > 1f)
     {
       noteTime = 0;
       DropNote(Random.Range(0, 3));
@@ -139,6 +145,7 @@ public class NotesTrack : MonoBehaviour
         currentNote.transform.position = PositionOnTrack(i, currentNote.TrackPosition);
         if (currentNote.TrackPosition > 1)
         {
+          OnNoteMiss?.Invoke();
           _activeNotes[i].Remove(currentNote);
           Recycle(currentNote);
         }
@@ -159,10 +166,13 @@ public class NotesTrack : MonoBehaviour
       Note note = _activeNotes[i][n];
       if (note.TrackPosition > 0.75f && note.TrackPosition <= 0.9f)
       {
+        OnNoteHit?.Invoke();
         _activeNotes[i].Remove(note);
         Spray(note);
+        return;
       }
     }
+    OnNoteMiss?.Invoke();
   }
 
   private Vector3 PositionOnTrack(int i, float t)
