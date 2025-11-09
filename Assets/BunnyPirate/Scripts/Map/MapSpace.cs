@@ -16,6 +16,7 @@ public class MapSpace : MonoBehaviour
   {
     areaName = data.AreaName;
     _backgroundColor = data.BackgroundColor;
+    Debug.Log(Camera.main.WorldToScreenPoint(transform.position));
   }
 
   public void EnterPlayer(PlayerShip ship)

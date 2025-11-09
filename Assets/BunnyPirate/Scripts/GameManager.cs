@@ -16,6 +16,7 @@ public class GameManager : Singleton<GameManager>
   static EnvironmentManager _environmentManager;
   static NotesTrack _notesTrack;
   static GameMap _gameMap;
+  static GameplayUIController _gameplayUI;
 
   public static void Register(PlayerShip ship)
   {
@@ -41,12 +42,19 @@ public class GameManager : Singleton<GameManager>
     if (instance != null)
       instance.TryInitialize();
   }
+  public static void Register(GameplayUIController gameplayUI)
+  {
+    _gameplayUI = gameplayUI;
+    if (instance != null)
+      instance.TryInitialize();
+  }
 
   bool allSystemsReady =>
   _playerShip != null &&
   _environmentManager != null &&
   _notesTrack != null &&
-  _gameMap != null;
+  _gameMap != null &&
+  _gameplayUI != null;
 
   private void TryInitialize()
   {
@@ -68,4 +76,6 @@ public class GameManager : Singleton<GameManager>
     _gameMap.MovePlayerShipTo(_gameMap.GetInitialSpace(), _playerShip);
     _environmentManager.DisplaySpace(_gameMap.GetCurrentSpace());
   }
+
+  public static MapSpace[] GetMapSpaces() => _gameMap.Spaces;
 }

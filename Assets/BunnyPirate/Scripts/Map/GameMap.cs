@@ -14,7 +14,8 @@ public class GameMap : MonoBehaviour
   //Areas are handled statically, while the representations of those areas are handled non-statically.
 
   //areas and transitions are both examples of spaces? so MapArea : MapSpace and MapTransition : MapSpace
-  [SerializeField] MapSpace[] spaces;
+  [SerializeField] MapSpace[] _spaces;
+  public MapSpace[] Spaces => _spaces;
   [SerializeField] int initialSpace;
 
   void Awake()
@@ -24,15 +25,15 @@ public class GameMap : MonoBehaviour
 
   public MapSpace GetInitialSpace()
   {
-    return spaces[initialSpace];
+    return _spaces[initialSpace];
   }
 
   public MapSpace GetCurrentSpace()
   {
-    for (int i = 0; i < spaces.Length; i++)
+    for (int i = 0; i < _spaces.Length; i++)
     {
-      if (spaces[i].ship != null)
-        return spaces[i];
+      if (_spaces[i].ship != null)
+        return _spaces[i];
     }
     return null;
   }
@@ -43,11 +44,11 @@ public class GameMap : MonoBehaviour
     if (current != null)
       current.ExitPlayer();
 
-    for (int i = 0; i < spaces.Length; i++)
+    for (int i = 0; i < _spaces.Length; i++)
     {
-      if (spaces[i] == space)
+      if (_spaces[i] == space)
       {
-        spaces[i].EnterPlayer(ship);
+        _spaces[i].EnterPlayer(ship);
         return;
       }
     }
