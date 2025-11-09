@@ -3,19 +3,53 @@ using UnityEngine;
 
 public class GameMap : MonoBehaviour
 {
-  List<MapArea> mapAreas = new List<MapArea>();
+  //areas and transitions contian and pass along references to the player's ship and other player data.
+  //areas also contain references to shops, npcs, cutscenes, etc.
+  //transitions are what contain references to events, tracks, more cutscenes, etc.
+  //
+  //initial area has a single transition to middle areas,
+  //  middle areas have 2 or more transitions to other middle areas or an end area.
+  //  end areas have no transitions.
 
-  MapArea loadedArea;
+  //Areas are handled statically, while the representations of those areas are handled non-statically.
 
-}
+  //areas and transitions are both examples of spaces? so MapArea : MapSpace and MapTransition : MapSpace
+  [SerializeField] MapSpace[] spaces;
+  [SerializeField] int initialSpace;
 
-public class MapArea
-{
-  public string areaName { get; private set; }
-  public Color backgroundColor { get; private set; }
-  public void Initialize(AreaData data)
+  void Awake()
   {
-    areaName = data.AreaName;
-    backgroundColor = data.BackgroundColor;
+    GameManager.Register(this);
+  }
+
+  public MapSpace GetInitialSpace()
+  {
+    return spaces[initialSpace];
+  }
+
+  public MapSpace GetCurrentSpace()
+  {
+    for (int i = 0; i < spaces.Length; i++)
+    {
+      if (spaces[i].ship != null)
+        return spaces[i];
+    }
+    return null;
+  }
+
+  public void MovePlayerShipTo(MapSpace space, PlayerShip ship)
+  {
+    MapSpace current = GetCurrentSpace();
+    if (current != null)
+      current.ExitPlayer();
+
+    for (int i = 0; i < spaces.Length; i++)
+    {
+      if (spaces[i] == space)
+      {
+        spaces[i].EnterPlayer(ship);
+        return;
+      }
+    }
   }
 }

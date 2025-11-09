@@ -100,6 +100,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8204218536271160854}
   - component: {fileID: 8357364533849076301}
+  - component: {fileID: 2193993773395918933}
   m_Layer: 0
   m_Name: EnvironmentManager
   m_TagString: Untagged
@@ -137,6 +138,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnvironmentManager
   backgroundRenderer: {fileID: 4813721499102372760}
+--- !u!114 &2193993773395918933
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 689085382669539624}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbfcc7fc9cae36e4dadb984af7e3bfd3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameplayUIController
 --- !u!1 &5383201950277152618
 GameObject:
   m_ObjectHideFlags: 0

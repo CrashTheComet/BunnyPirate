@@ -46,6 +46,8 @@ public class NotesTrack : MonoBehaviour
     Inputs.onNoteStrike1 += () => { PassInput(0); };
     Inputs.onNoteStrike2 += () => { PassInput(1); };
     Inputs.onNoteStrike3 += () => { PassInput(2); };
+
+    GameManager.Register(this);
   }
 
   void Update()

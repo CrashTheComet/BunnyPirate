@@ -22,6 +22,8 @@ public class PlayerShip : MonoBehaviour
 
     notesTrack.OnBadInput += () => { Hurt(10f); };
     notesTrack.OnNoteMiss += () => { Hurt(10f); };
+
+    GameManager.Register(this);
   }
 
   public void Hurt(float amount)
