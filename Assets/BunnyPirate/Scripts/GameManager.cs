@@ -69,7 +69,7 @@ public class GameManager : Singleton<GameManager>
   //  Confirm selection ->
   //  begin sequence 2.
 
-  public void EnterSequence1()
+  public static void EnterSequence1()
   {
     _gameMap.gameObject.SetActive(false);
     _notesTrack.gameObject.SetActive(false);
@@ -78,4 +78,27 @@ public class GameManager : Singleton<GameManager>
   }
 
   public static MapSpace[] GetMapSpaces() => _gameMap.Spaces;
+
+  public static void TrySelectMapSpace(string name)
+  {
+    _gameMap.SelectMapSpace(name);
+  }
+
+  public static void ConfirmMapSelection()
+  {
+    _gameMap.Confirm();
+  }
+
+  //sequence 2:
+  //disable unneeded objects from sequence 1
+  //move the player ship (just a white square for now) to the side and start up the notes track, which plays a series of rhythym events.
+  //I'll comment the best I can on how the notes track works, but the main thing will be the DropNote function.
+  //modify EnterSequence2 as needed.
+  //I'll work on making the map selection system work more intentionally later. For now you just 
+  //pick one of the blue circles and click confirm, which will fire off the EnterSequence2 function.
+
+  public static void EnterSequence2(string destinationName)
+  {
+    Debug.Log($"EnterSequence2(distinationName: {destinationName})");
+  }
 }

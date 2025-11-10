@@ -12,17 +12,23 @@ public class Sequence1View : MonoBehaviour, ISequence1UI
   public event Action OnShowMap;
   [SerializeField] Button _cancelMapButton;
   public event Action OnCancelMap;
+  [SerializeField] Button _confirmMapSpaceButton;
+  public event Action OnConfirmMapSpace;
 
-  [SerializeField] Button _mapButtonTemplate;
-  List<Button> _mapButtons = new();
+  [SerializeField] MapSpaceButton _mapButtonTemplate;
+  List<MapSpaceButton> _mapButtons = new();
+
+  [SerializeField] Transform _buttonParentTransform;
 
   void Awake()
   {
-    _showMapButton.onClick.AddListener(() => { ShowGameMap(true); });
-    _cancelMapButton.onClick.AddListener(() => { ShowGameMap(false); });
+    _showMapButton.onClick.AddListener(() => { OnShowMap?.Invoke(); });
+    _cancelMapButton.onClick.AddListener(() => { OnCancelMap?.Invoke(); });
+    _confirmMapSpaceButton.onClick.AddListener(() => { OnConfirmMapSpace?.Invoke(); });
 
     _cancelMapButton.gameObject.SetActive(false);
     _showMapButton.gameObject.SetActive(true);
+    _confirmMapSpaceButton.gameObject.SetActive(false);
   }
 
   public void ShowGameMap(bool show)
@@ -31,6 +37,10 @@ public class Sequence1View : MonoBehaviour, ISequence1UI
 
     _cancelMapButton.gameObject.SetActive(show);
     _showMapButton.gameObject.SetActive(!show);
+    _confirmMapSpaceButton.gameObject.SetActive(show);
+
+    if (show)
+      UpdateMapButtons();
   }
 
   public void UpdateMapButtons()
@@ -40,12 +50,27 @@ public class Sequence1View : MonoBehaviour, ISequence1UI
     {
       if (i >= _mapButtons.Count)
       {
-        Button b = Instantiate(_mapButtonTemplate.gameObject).GetComponent<Button>();
-        b.gameObject.SetActive(true);
+        MapSpaceButton b = Instantiate(_mapButtonTemplate.gameObject, _buttonParentTransform).GetComponent<MapSpaceButton>();
         b.GetComponent<RectTransform>().anchoredPosition = Camera.main.WorldToScreenPoint(
           mapSpaces[i].transform.position
         );
         _mapButtons.Add(b);
+      }
+    }
+
+    for (int i = 0; i < _mapButtons.Count; i++)
+    {
+      if (i < mapSpaces.Length)
+      {
+        _mapButtons[i].gameObject.SetActive(true);
+        _mapButtons[i].GetComponent<RectTransform>().anchoredPosition = Camera.main.WorldToScreenPoint(
+          mapSpaces[i].transform.position
+        );
+        _mapButtons[i].SetName(mapSpaces[i].spaceName);
+      }
+      else
+      {
+        _mapButtons[i].gameObject.SetActive(false);
       }
     }
   }

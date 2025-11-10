@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Space3
   m_EditorClassIdentifier: Assembly-CSharp::SpaceData
   AreaName: space 3
-  BackgroundColor: {r: 0.7830189, g: 0.29178533, b: 0.29178533, a: 0}
+  BackgroundColor: {r: 0.7830189, g: 0.29178533, b: 0.29178533, a: 1}
