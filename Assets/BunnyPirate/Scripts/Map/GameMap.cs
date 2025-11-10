@@ -42,6 +42,21 @@ public class GameMap : MonoBehaviour
     return null;
   }
 
+    public bool CheckConnection(MapSpace newSpace)
+    {
+        MapSpace start = GetCurrentSpace();
+
+        for (int i = 0; i < start.ConnectedSpaces.Length; i++)
+        {
+            if (start.ConnectedSpaces[i] == newSpace)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
   public void MovePlayerShipTo(MapSpace space, PlayerShip ship)
   {
     MapSpace current = GetCurrentSpace();
@@ -82,6 +97,6 @@ public class GameMap : MonoBehaviour
   public void Confirm()
   {
     if (_selectedMapSpace != null)
-      GameManager.EnterSequence2(_selectedMapSpace.spaceName);
+      GameManager.EnterSequence2(_selectedMapSpace);
   }
 }

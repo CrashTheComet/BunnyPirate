@@ -107,7 +107,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MapSpace
   data: {fileID: 11400000, guid: a99e01ae4c6df05479b1d0d8d0d9ad5c, type: 2}
   _selectionIndicator: {fileID: 7288912401564487414}
-  _playerIndicator: {fileID: 0}
+  _playerIndicator: {fileID: 4300609810721572076}
   connectedSpaces:
   - {fileID: 3447737214778636096}
 --- !u!1 &3031902426543184014
@@ -667,7 +667,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MapSpace
   data: {fileID: 11400000, guid: 7ad83f3ff2a00a2469344ec6b9cbb75b, type: 2}
   _selectionIndicator: {fileID: 4678574514026153784}
-  _playerIndicator: {fileID: 0}
+  _playerIndicator: {fileID: 5818141287795803496}
   connectedSpaces:
   - {fileID: 3124705174831210572}
   - {fileID: 5456907883421321706}
