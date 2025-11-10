@@ -22,10 +22,18 @@ public class Inputs : Singleton<Inputs>
     onNoteStrike3?.Invoke();
   }
 
+  public static Vector2 MousePosition;
+  public void OnMousePosition(InputValue val)
+  {
+    MousePosition = val.Get<Vector2>();
+  }
+
   void OnDestroy()
   {
     onNoteStrike1 = null;
     onNoteStrike2 = null;
     onNoteStrike3 = null;
   }
+
+
 }
