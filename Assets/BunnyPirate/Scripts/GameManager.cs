@@ -17,6 +17,7 @@ public class GameManager : Singleton<GameManager>
   static NotesTrack _notesTrack;
   static GameMap _gameMap;
   static GameplayUIController _gameplayUI;
+    static MapSpace goalpath;
 
   public static void Register(PlayerShip ship)
   {
@@ -97,8 +98,26 @@ public class GameManager : Singleton<GameManager>
   //I'll work on making the map selection system work more intentionally later. For now you just 
   //pick one of the blue circles and click confirm, which will fire off the EnterSequence2 function.
 
-  public static void EnterSequence2(string destinationName)
-  {
-    Debug.Log($"EnterSequence2(distinationName: {destinationName})");
-  }
+    public static void EnterSequence2(MapSpace destination)
+    {
+        if (!_gameMap.CheckConnection(destination))
+        {
+            Debug.LogError($"CantMoveTo EnterSequence2(distinationName: {destination.spaceName})");
+            return;
+        }
+
+        Debug.Log($"EnterSequence2(distinationName: {destination.spaceName})");
+
+        goalpath = destination;
+        // make it later
+        // _gameMap.MovePlayerShipTo(destination, _playerShip);
+
+        ActiveObjectsForSequence2();
+    }
+
+    public static void ActiveObjectsForSequence2()
+    {
+        GameplayUIController UIController = FindFirstObjectByType<GameplayUIController>();
+        UIController.OpenCloseGameMap(false);
+    }
 }

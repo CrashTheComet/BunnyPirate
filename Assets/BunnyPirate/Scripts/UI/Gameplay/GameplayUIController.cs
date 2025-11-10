@@ -30,4 +30,9 @@ public class GameplayUIController : MonoBehaviour
     _sequence1Model = new();
     _sequence1Presenter = new(_sequence1Model, _sequence1View);
   }
+
+    public void OpenCloseGameMap(bool isOpen)
+    {
+        _sequence1Model.ShowGameMap(isOpen);
+    }
 }
