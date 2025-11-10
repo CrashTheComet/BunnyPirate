@@ -117,8 +117,7 @@ public class GameManager : Singleton<GameManager>
 
     public static void ActiveObjectsForSequence2()
     {
-        _gameMap.gameObject.SetActive(false);
-        _notesTrack.gameObject.SetActive(false);
-
+        GameplayUIController UIController = FindFirstObjectByType<GameplayUIController>();
+        UIController.OpenCloseGameMap(false);
     }
 }
