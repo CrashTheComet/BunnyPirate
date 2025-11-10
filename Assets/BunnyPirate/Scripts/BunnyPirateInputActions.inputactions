@@ -1,0 +1,92 @@
+{
+    "version": 1,
+    "name": "BunnyPirateInputActions",
+    "maps": [
+        {
+            "name": "InGame",
+            "id": "8c31167a-333d-4390-ac84-f062cc6aa8d9",
+            "actions": [
+                {
+                    "name": "NoteStrike1",
+                    "type": "Button",
+                    "id": "4e939010-07fa-4207-8c0a-033cd1ed92ed",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "NoteStrike2",
+                    "type": "Button",
+                    "id": "c5253e53-b163-4bed-9a1f-6e96778c0e5a",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "NoteStrike3",
+                    "type": "Button",
+                    "id": "c3f2103f-dcf1-4c0b-8718-44f6d346d688",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "abbab744-16cd-45d7-beae-facda6a9f3cc",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard/Mouse",
+                    "action": "NoteStrike1",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6da41e83-8400-4792-9c4c-0f144536376a",
+                    "path": "<Keyboard>/s",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard/Mouse",
+                    "action": "NoteStrike2",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6b1df013-bf58-4fe9-97cc-fc8afc88829e",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard/Mouse",
+                    "action": "NoteStrike3",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": [
+        {
+            "name": "Keyboard/Mouse",
+            "bindingGroup": "Keyboard/Mouse",
+            "devices": [
+                {
+                    "devicePath": "<Mouse>",
+                    "isOptional": false,
+                    "isOR": false
+                },
+                {
+                    "devicePath": "<Keyboard>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        }
+    ]
+}
