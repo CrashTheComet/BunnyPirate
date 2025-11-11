@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class GameMap : MonoBehaviour
@@ -95,7 +96,9 @@ public class GameMap : MonoBehaviour
 
   public void Confirm()
   {
-    if (_selectedMapSpace != null)
-      GameManager.EnterSequence(1, _selectedMapSpace);
+        if (_selectedMapSpace != null && GetCurrentSpace().ConnectedSpaces.Contains(_selectedMapSpace))
+            GameManager.EnterSequence(1, _selectedMapSpace);
+        else
+            Debug.LogError("YouCantSetThisScpace");
   }
 }

@@ -26,6 +26,9 @@ public class GameManager : Singleton<GameManager>
     public static void Register(SequenceController controller)
     {
         controllers.Add(controller);
+
+        controllers.Sort((a, b) => a.OddNum.CompareTo(b.OddNum));
+
         if (instance != null)
             instance.TryInitialize();
     }
@@ -78,8 +81,8 @@ public class GameManager : Singleton<GameManager>
     public static void EnterSequence(int i, MapSpace destination = null)
     {
         goalpath = destination;
-
-        Debug.Log($"Destination:{destination.spaceName}");
+        if(destination)
+            Debug.Log($"Destination:{destination.spaceName}");
 
         controllers[i].EnterSequence();
     }
