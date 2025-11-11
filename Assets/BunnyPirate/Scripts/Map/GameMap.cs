@@ -19,13 +19,12 @@ public class GameMap : MonoBehaviour
   MapSpace _selectedMapSpace;
   [SerializeField] int initialSpace;
 
-  void Awake()
-  {
-    foreach (MapSpace space in Spaces)
-      space.Initialize(this);
-
-    GameManager.Register(this);
-  }
+    void Awake()
+    {
+        foreach (MapSpace space in Spaces)
+            space.Initialize(this);
+        GameManager.Register(this);
+    }
 
   public MapSpace GetInitialSpace()
   {
@@ -97,6 +96,6 @@ public class GameMap : MonoBehaviour
   public void Confirm()
   {
     if (_selectedMapSpace != null)
-      GameManager.EnterSequence2(_selectedMapSpace);
+      GameManager.EnterSequence(1, _selectedMapSpace);
   }
 }

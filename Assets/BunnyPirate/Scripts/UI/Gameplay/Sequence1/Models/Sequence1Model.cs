@@ -1,68 +1,96 @@
 using System;
 using UnityEngine;
 
-public interface ISequence1UI
+public class Sequence1Controller : SequenceController
 {
-  void ShowGameMap(bool show);
+    // Needed for Sequence sorting
+    [SerializeField] public int Order => 1;
 
-  event Action OnShowMap;
-  event Action OnCancelMap;
-  event Action OnConfirmMapSpace;
+    [SerializeField] Sequence1View _sequence1View;
+    [SerializeField] GameMap _gameMap;
+
+    protected void Awake()
+    {
+        _sequence1View.OnConfirmMapSpace += ConfirmMapSelection;
+
+        CreateMap();
+
+        SequenceAwake();
+    }
+
+    public override void SequenceAwake()
+    {
+        base.SequenceAwake();
+        //
+    }
+
+    public override void EnterSequence()
+    {
+        base.EnterSequence();
+        _sequence1View.EnterSequence();
+    }
+
+    public override void ExitSequence()
+    {
+        base.ExitSequence();
+        _sequence1View.EnterSequence();
+    }
+
+    private void CreateMap()
+    {
+
+        if (_gameMap == null)
+            _gameMap = FindFirstObjectByType<GameMap>();
+
+        // THE CRUTCH IS A CRUTCH !!! - I do not know how to write in English that this code is temporary
+        var _playerShip = FindFirstObjectByType<PlayerShip>();
+        //
+
+        _gameMap.MovePlayerShipTo(_gameMap.GetInitialSpace(), _playerShip);
+    }
+
+    private void ConfirmMapSelection()
+    {
+        _gameMap.Confirm();
+    }
 }
 
-public class SequenceController
-{
-  public bool _mapOpened = false;
+// I still don't know why this class is needed
 
-  public event Action OnChange;
+//public class Sequence1Presenter
+//{
+//  Sequence1Controller _model;
+//  ISequence1UI _view;
 
-  public void ShowGameMap(bool show)
-  {
-    _mapOpened = show;
-    OnChange?.Invoke();
-  }
+//  public Sequence1Presenter(Sequence1Controller model, ISequence1UI view)
+//  {
+//    _model = model;
+//    _view = view;
 
-  public void ConfirmMapSelection()
-  {
-    GameManager.ConfirmMapSelection();
-    OnChange?.Invoke();
-  }
-}
+//    _model.OnChange += UpdateView;
 
-public class Sequence1Presenter
-{
-  SequenceController _model;
-  ISequence1UI _view;
+//    _view.OnShowMap += ShowMap;
+//    _view.OnCancelMap += CancelMap;
+//    _view.OnConfirmMapSpace += ConfirmMapSpace;
+//  }
 
-  public Sequence1Presenter(SequenceController model, ISequence1UI view)
-  {
-    _model = model;
-    _view = view;
+//  private void UpdateView()
+//  {
+//    _view.ShowGameMap(_model._mapOpened);
+//  }
 
-    _model.OnChange += UpdateView;
+//  private void ShowMap()
+//  {
+//    _model.ShowGameMap(true);
+//  }
 
-    _view.OnShowMap += ShowMap;
-    _view.OnCancelMap += CancelMap;
-    _view.OnConfirmMapSpace += ConfirmMapSpace;
-  }
+//  private void CancelMap()
+//  {
+//    _model.ShowGameMap(false);
+//  }
 
-  private void UpdateView()
-  {
-    _view.ShowGameMap(_model._mapOpened);
-  }
-
-  private void ShowMap()
-  {
-    _model.ShowGameMap(true);
-  }
-
-  private void CancelMap()
-  {
-    _model.ShowGameMap(false);
-  }
-
-  private void ConfirmMapSpace()
-  {
-    _model.ConfirmMapSelection();
-  }
-}
+//  private void ConfirmMapSpace()
+//  {
+//    _model.ConfirmMapSelection();
+//  }
+//}

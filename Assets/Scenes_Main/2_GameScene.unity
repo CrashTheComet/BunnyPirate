@@ -560,6 +560,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ef2a260e1ab15d46a921fa81171b649, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MapSpace
+--- !u!114 &1171992170 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5033544068205830313, guid: 8711e8d5b8222d042b92e4440e9a89fe, type: 3}
+  m_PrefabInstance: {fileID: 1171992165}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 235612154}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5096ca62e6763f34fb5ba1907879146c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameMap
 --- !u!1001 &1263306078
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -751,6 +762,10 @@ PrefabInstance:
       value: OpenLobbyButton
       objectReference: {fileID: 0}
     - target: {fileID: 3384048043095004905, guid: 9453dd770c66fcc478aa05502d0314e5, type: 3}
+      propertyPath: _gameMap
+      value: 
+      objectReference: {fileID: 1171992170}
+    - target: {fileID: 3384048043095004905, guid: 9453dd770c66fcc478aa05502d0314e5, type: 3}
       propertyPath: _gameMapObject
       value: 
       objectReference: {fileID: 235612154}
@@ -768,6 +783,26 @@ PrefabInstance:
       objectReference: {fileID: 5928698679992938420}
     - target: {fileID: 3384048043095004905, guid: 9453dd770c66fcc478aa05502d0314e5, type: 3}
       propertyPath: _gameUIList._gameUI.Array.data[1].gameObject
+      value: 
+      objectReference: {fileID: 5928698679992938419}
+    - target: {fileID: 3384048043095004905, guid: 9453dd770c66fcc478aa05502d0314e5, type: 3}
+      propertyPath: _gameUIList._gameUI.Array.data[0].GameObjects.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3384048043095004905, guid: 9453dd770c66fcc478aa05502d0314e5, type: 3}
+      propertyPath: _gameUIList._gameUI.Array.data[1].GameObjects.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3384048043095004905, guid: 9453dd770c66fcc478aa05502d0314e5, type: 3}
+      propertyPath: '_gameUIList._gameUI.Array.data[0].GameObjects.Array.data[0]'
+      value: 
+      objectReference: {fileID: 5928698679992938420}
+    - target: {fileID: 3384048043095004905, guid: 9453dd770c66fcc478aa05502d0314e5, type: 3}
+      propertyPath: '_gameUIList._gameUI.Array.data[1].GameObjects.Array.data[0]'
+      value: 
+      objectReference: {fileID: 235612154}
+    - target: {fileID: 3384048043095004905, guid: 9453dd770c66fcc478aa05502d0314e5, type: 3}
+      propertyPath: '_gameUIList._gameUI.Array.data[1].GameObjects.Array.data[1]'
       value: 
       objectReference: {fileID: 5928698679992938419}
     - target: {fileID: 4006157116889562175, guid: 9453dd770c66fcc478aa05502d0314e5, type: 3}
@@ -801,7 +836,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7548001500489409221, guid: 9453dd770c66fcc478aa05502d0314e5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5928698679992938423}
   m_SourcePrefab: {fileID: 100100000, guid: 9453dd770c66fcc478aa05502d0314e5, type: 3}
 --- !u!1 &5928698679992938419 stripped
 GameObject:
@@ -818,12 +856,32 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3384048043095004905, guid: 9453dd770c66fcc478aa05502d0314e5, type: 3}
   m_PrefabInstance: {fileID: 5928698679992938418}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 5928698679992938422}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2e415cd05c9d5fe45895302adb41c454, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Sequence1View
+--- !u!1 &5928698679992938422 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7548001500489409221, guid: 9453dd770c66fcc478aa05502d0314e5, type: 3}
+  m_PrefabInstance: {fileID: 5928698679992938418}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &5928698679992938423
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5928698679992938422}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9fd403657fdf4ed419f6605c259593b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Sequence1Controller
+  _mapOpened: 0
+  _sequence1View: {fileID: 5928698679992938421}
+  _gameMap: {fileID: 1171992170}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

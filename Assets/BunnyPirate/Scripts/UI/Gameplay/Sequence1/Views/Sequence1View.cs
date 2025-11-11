@@ -6,12 +6,15 @@ using UnityEngine;
 public struct gameUI
 {
     [SerializeField] private string name;
-    [SerializeField] private GameObject gameObject;
+    [SerializeField] private List<GameObject> GameObjects;
 
     public string Name { get => name; }
     public void SetActive(bool isActive)
     {
-        gameObject.SetActive(isActive);
+        foreach (var item in GameObjects)
+        {
+            item.SetActive(isActive);
+        }
     }
 }
 
@@ -40,27 +43,27 @@ public class gameUIList
     }
 }
 
-public class Sequence1View : Singleton<Sequence1View>
+[Serializable]
+public class Sequence1View : MonoBehaviour
 {
-    [SerializeField] GameObject _gameMapObject;
+    [SerializeField] GameMap _gameMap;
     [SerializeField] private gameUIList _gameUIList;
 
     [SerializeField] MapSpaceButton _mapButtonTemplate;
     List<MapSpaceButton> _mapButtons = new();
 
-
+    public event Action OnConfirmMapSpace;
     [SerializeField] Transform _buttonParentTransform;
 
-    protected override void Awake()
+    // The local version of Awake
+    public void EnterSequence()
     {
-        base.Awake();
-
         ShowGameLobby();
     }
 
     public void ShowGameLobby()
     {
-        _gameMapObject.SetActive(false);
+        _gameMap.gameObject.SetActive(false);
 
         int n = _gameUIList.FindGameUIByName("GameLobby");
 
@@ -72,7 +75,7 @@ public class Sequence1View : Singleton<Sequence1View>
 
     public void ShowGameMap()
     {
-        _gameMapObject.SetActive(true);
+        _gameMap.gameObject.SetActive(true);
 
         int n = _gameUIList.FindGameUIByName("GameMap");
 
@@ -84,11 +87,16 @@ public class Sequence1View : Singleton<Sequence1View>
         UpdateMapSpaces();
     }
 
+    public void OnConfirm()
+    {
+        OnConfirmMapSpace?.Invoke();
+    }
+
     // I didn't understand this code very well, but I like it conceptually
     // I think I broke the MapSpace operation, but I'm fixing it.
     public void UpdateMapSpaces()
     {
-        MapSpace[] mapSpaces = GameManager.GetMapSpaces();
+        MapSpace[] mapSpaces = _gameMap.Spaces;
         for (int i = 0; i < mapSpaces.Length; i++)
         {
             if (i >= _mapButtons.Count)

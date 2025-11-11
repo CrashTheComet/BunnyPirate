@@ -302,6 +302,8 @@ RectTransform:
   m_Children:
   - {fileID: 6842095321382450329}
   - {fileID: 8540235477289753803}
+  - {fileID: 7728606814249713940}
+  - {fileID: 9016391869532442663}
   m_Father: {fileID: 7928931948215048634}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -472,7 +474,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 7390836617277802097}
+  m_Father: {fileID: 9186859317598033981}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -1072,7 +1074,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 867437349695915144}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 3384048043095004905}
+        m_TargetAssemblyTypeName: Sequence1View, Assembly-CSharp
+        m_MethodName: OnConfirm
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &3927443347323757916
 GameObject:
   m_ObjectHideFlags: 0
@@ -1102,8 +1116,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1943044737368581773}
-  - {fileID: 9016391869532442663}
-  - {fileID: 7728606814249713940}
   m_Father: {fileID: 7928931948215048634}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -1208,7 +1220,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 7390836617277802097}
+  m_Father: {fileID: 9186859317598033981}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
