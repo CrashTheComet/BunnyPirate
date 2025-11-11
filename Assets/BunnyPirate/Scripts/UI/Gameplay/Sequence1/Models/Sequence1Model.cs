@@ -10,7 +10,7 @@ public interface ISequence1UI
   event Action OnConfirmMapSpace;
 }
 
-public class Sequence1Model
+public class SequenceController
 {
   public bool _mapOpened = false;
 
@@ -31,10 +31,10 @@ public class Sequence1Model
 
 public class Sequence1Presenter
 {
-  Sequence1Model _model;
+  SequenceController _model;
   ISequence1UI _view;
 
-  public Sequence1Presenter(Sequence1Model model, ISequence1UI view)
+  public Sequence1Presenter(SequenceController model, ISequence1UI view)
   {
     _model = model;
     _view = view;

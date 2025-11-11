@@ -714,19 +714,116 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 656448638507363253, guid: 9453dd770c66fcc478aa05502d0314e5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 656448638507363253, guid: 9453dd770c66fcc478aa05502d0314e5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 656448638507363253, guid: 9453dd770c66fcc478aa05502d0314e5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 5928698679992938421}
+    - target: {fileID: 656448638507363253, guid: 9453dd770c66fcc478aa05502d0314e5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 656448638507363253, guid: 9453dd770c66fcc478aa05502d0314e5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ShowGameLobby
+      objectReference: {fileID: 0}
+    - target: {fileID: 656448638507363253, guid: 9453dd770c66fcc478aa05502d0314e5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: Sequence1View, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 656448638507363253, guid: 9453dd770c66fcc478aa05502d0314e5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 1021671963549501563, guid: 9453dd770c66fcc478aa05502d0314e5, type: 3}
       propertyPath: m_Name
       value: GameplayCanvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 1718189806419513709, guid: 9453dd770c66fcc478aa05502d0314e5, type: 3}
+      propertyPath: m_Name
+      value: OpenLobbyButton
       objectReference: {fileID: 0}
     - target: {fileID: 3384048043095004905, guid: 9453dd770c66fcc478aa05502d0314e5, type: 3}
       propertyPath: _gameMapObject
       value: 
       objectReference: {fileID: 235612154}
+    - target: {fileID: 3384048043095004905, guid: 9453dd770c66fcc478aa05502d0314e5, type: 3}
+      propertyPath: _gameUIList._gameUI.Array.data[0].name
+      value: GameLobby
+      objectReference: {fileID: 0}
+    - target: {fileID: 3384048043095004905, guid: 9453dd770c66fcc478aa05502d0314e5, type: 3}
+      propertyPath: _gameUIList._gameUI.Array.data[1].name
+      value: GameMap
+      objectReference: {fileID: 0}
+    - target: {fileID: 3384048043095004905, guid: 9453dd770c66fcc478aa05502d0314e5, type: 3}
+      propertyPath: _gameUIList._gameUI.Array.data[0].gameObject
+      value: 
+      objectReference: {fileID: 5928698679992938420}
+    - target: {fileID: 3384048043095004905, guid: 9453dd770c66fcc478aa05502d0314e5, type: 3}
+      propertyPath: _gameUIList._gameUI.Array.data[1].gameObject
+      value: 
+      objectReference: {fileID: 5928698679992938419}
+    - target: {fileID: 4006157116889562175, guid: 9453dd770c66fcc478aa05502d0314e5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4006157116889562175, guid: 9453dd770c66fcc478aa05502d0314e5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4006157116889562175, guid: 9453dd770c66fcc478aa05502d0314e5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 5928698679992938421}
+    - target: {fileID: 4006157116889562175, guid: 9453dd770c66fcc478aa05502d0314e5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4006157116889562175, guid: 9453dd770c66fcc478aa05502d0314e5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ShowGameMap
+      objectReference: {fileID: 0}
+    - target: {fileID: 4006157116889562175, guid: 9453dd770c66fcc478aa05502d0314e5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: Sequence1View, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 4006157116889562175, guid: 9453dd770c66fcc478aa05502d0314e5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9453dd770c66fcc478aa05502d0314e5, type: 3}
+--- !u!1 &5928698679992938419 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 789845953320970859, guid: 9453dd770c66fcc478aa05502d0314e5, type: 3}
+  m_PrefabInstance: {fileID: 5928698679992938418}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &5928698679992938420 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3927443347323757916, guid: 9453dd770c66fcc478aa05502d0314e5, type: 3}
+  m_PrefabInstance: {fileID: 5928698679992938418}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &5928698679992938421 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3384048043095004905, guid: 9453dd770c66fcc478aa05502d0314e5, type: 3}
+  m_PrefabInstance: {fileID: 5928698679992938418}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e415cd05c9d5fe45895302adb41c454, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Sequence1View
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

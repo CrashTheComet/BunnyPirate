@@ -1,77 +1,120 @@
 using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class Sequence1View : MonoBehaviour, ISequence1UI
+[Serializable]
+public struct gameUI
 {
-  [SerializeField] GameObject _gameMapObject;
+    [SerializeField] private string name;
+    [SerializeField] private GameObject gameObject;
 
-  [SerializeField] Button _showMapButton;
-  public event Action OnShowMap;
-  [SerializeField] Button _cancelMapButton;
-  public event Action OnCancelMap;
-  [SerializeField] Button _confirmMapSpaceButton;
-  public event Action OnConfirmMapSpace;
-
-  [SerializeField] MapSpaceButton _mapButtonTemplate;
-  List<MapSpaceButton> _mapButtons = new();
-
-  [SerializeField] Transform _buttonParentTransform;
-
-  void Awake()
-  {
-    _showMapButton.onClick.AddListener(() => { OnShowMap?.Invoke(); });
-    _cancelMapButton.onClick.AddListener(() => { OnCancelMap?.Invoke(); });
-    _confirmMapSpaceButton.onClick.AddListener(() => { OnConfirmMapSpace?.Invoke(); });
-
-    _cancelMapButton.gameObject.SetActive(false);
-    _showMapButton.gameObject.SetActive(true);
-    _confirmMapSpaceButton.gameObject.SetActive(false);
-  }
-
-  public void ShowGameMap(bool show)
-  {
-    _gameMapObject.SetActive(show);
-
-    _cancelMapButton.gameObject.SetActive(show);
-    _showMapButton.gameObject.SetActive(!show);
-    _confirmMapSpaceButton.gameObject.SetActive(show);
-
-    if (show)
-      UpdateMapButtons();
-  }
-
-  public void UpdateMapButtons()
-  {
-    MapSpace[] mapSpaces = GameManager.GetMapSpaces();
-    for (int i = 0; i < mapSpaces.Length; i++)
+    public string Name { get => name; }
+    public void SetActive(bool isActive)
     {
-      if (i >= _mapButtons.Count)
-      {
-        MapSpaceButton b = Instantiate(_mapButtonTemplate.gameObject, _buttonParentTransform).GetComponent<MapSpaceButton>();
-        b.GetComponent<RectTransform>().anchoredPosition = Camera.main.WorldToScreenPoint(
-          mapSpaces[i].transform.position
-        );
-        _mapButtons.Add(b);
-      }
+        gameObject.SetActive(isActive);
+    }
+}
+
+/// <summary>
+/// There are purely interfaces inside Sequence, 
+/// but you can try to cram objects according to the type of card, 
+/// although it is doubtful
+/// </summary>
+[Serializable]
+public class gameUIList
+{
+    [SerializeField] private List<gameUI> _gameUI;
+
+    public int FindGameUIByName(string name)
+    {
+        for (int i = 0; i < _gameUI.Count; i++)
+            if (_gameUI[i].Name == name)
+                return i;
+        return -1;
     }
 
-    for (int i = 0; i < _mapButtons.Count; i++)
+    public void ActiveByNum(int num)
     {
-      if (i < mapSpaces.Length)
-      {
-        _mapButtons[i].gameObject.SetActive(true);
-        _mapButtons[i].GetComponent<RectTransform>().anchoredPosition = Camera.main.WorldToScreenPoint(
-          mapSpaces[i].transform.position
-        );
-        _mapButtons[i].SetName(mapSpaces[i].spaceName);
-      }
-      else
-      {
-        _mapButtons[i].gameObject.SetActive(false);
-      }
+        for (int i = 0; i < _gameUI.Count; i++)
+            _gameUI[i].SetActive(i == num);
     }
-  }
+}
+
+public class Sequence1View : Singleton<Sequence1View>
+{
+    [SerializeField] GameObject _gameMapObject;
+    [SerializeField] private gameUIList _gameUIList;
+
+    [SerializeField] MapSpaceButton _mapButtonTemplate;
+    List<MapSpaceButton> _mapButtons = new();
+
+
+    [SerializeField] Transform _buttonParentTransform;
+
+    protected override void Awake()
+    {
+        base.Awake();
+
+        ShowGameLobby();
+    }
+
+    public void ShowGameLobby()
+    {
+        _gameMapObject.SetActive(false);
+
+        int n = _gameUIList.FindGameUIByName("GameLobby");
+
+        if (n == -1)
+            Debug.LogError("Wrong Name Of UI");
+        else
+            _gameUIList.ActiveByNum(n);
+    }
+
+    public void ShowGameMap()
+    {
+        _gameMapObject.SetActive(true);
+
+        int n = _gameUIList.FindGameUIByName("GameMap");
+
+        if (n == -1)
+            Debug.LogError("Wrong Name Of UI");
+        else
+            _gameUIList.ActiveByNum(n);
+
+        UpdateMapSpaces();
+    }
+
+    // I didn't understand this code very well, but I like it conceptually
+    // I think I broke the MapSpace operation, but I'm fixing it.
+    public void UpdateMapSpaces()
+    {
+        MapSpace[] mapSpaces = GameManager.GetMapSpaces();
+        for (int i = 0; i < mapSpaces.Length; i++)
+        {
+            if (i >= _mapButtons.Count)
+            {
+                MapSpaceButton b = Instantiate(_mapButtonTemplate.gameObject, _buttonParentTransform).GetComponent<MapSpaceButton>();
+                b.GetComponent<RectTransform>().anchoredPosition = Camera.main.WorldToScreenPoint(
+                  mapSpaces[i].transform.position
+                );
+                _mapButtons.Add(b);
+            }
+        }
+
+        for (int i = 0; i < _mapButtons.Count; i++)
+        {
+            if (i < mapSpaces.Length)
+            {
+                _mapButtons[i].gameObject.SetActive(true);
+                _mapButtons[i].GetComponent<RectTransform>().anchoredPosition = Camera.main.WorldToScreenPoint(
+                  mapSpaces[i].transform.position
+                );
+                _mapButtons[i].SetName(mapSpaces[i].spaceName);
+            }
+            else
+            {
+                _mapButtons[i].gameObject.SetActive(false);
+            }
+        }
+    }
 }
