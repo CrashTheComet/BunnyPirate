@@ -1,29 +1,29 @@
 using System;
 using UnityEngine;
 
-public class PlayerShip : MonoBehaviour
+public class PlayerShip : Singleton<PlayerShip>
 {
+  //static ref
+  public static PlayerShip ship => instance;
+
+  //health
   float _maxHealth = 100;
   public float Health { get; private set; }
-
   private float Health01 => Health / _maxHealth;
 
+  //events
   public event Action OnDeath;
 
-  [SerializeField] NotesTrack notesTrack;
-
+  //component references
   SpriteRenderer spriteRenderer;
 
-  void Awake()
+  protected override void Awake()
   {
+    base.Awake();
+
     spriteRenderer = GetComponent<SpriteRenderer>();
 
     Health = _maxHealth;
-
-    notesTrack.OnBadInput += () => { Hurt(10f); };
-    notesTrack.OnNoteMiss += () => { Hurt(10f); };
-
-    GameManager.Register(this);
   }
 
   public void Hurt(float amount)

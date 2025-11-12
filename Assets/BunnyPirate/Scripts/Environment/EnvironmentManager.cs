@@ -1,25 +1,16 @@
 using UnityEngine;
 
-public class EnvironmentManager : MonoBehaviour
+public class EnvironmentManager : Singleton<EnvironmentManager>
 {
   [SerializeField] SpriteRenderer backgroundRenderer;
 
-  void Awake()
+  protected override void Awake()
   {
-    GameManager.Register(this);
+    base.Awake();
   }
 
-
-  public void DisplaySpace(MapSpace space)
+  public static void DisplaySpace(MapSpace space)
   {
-    backgroundRenderer.color = space.backgroundColor;
+    instance.backgroundRenderer.color = space.backgroundColor;
   }
-
-  public void StartTransition()
-  {
-    //start transition from player's current area to another.
-  }
-
-  //environment manager handles the game elements and ui when loading into a new area or transition.
-  //
 }

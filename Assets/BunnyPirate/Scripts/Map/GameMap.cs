@@ -23,8 +23,6 @@ public class GameMap : MonoBehaviour
   {
     foreach (MapSpace space in Spaces)
       space.Initialize(this);
-
-    GameManager.Register(this);
   }
 
   public MapSpace GetInitialSpace()
@@ -42,7 +40,7 @@ public class GameMap : MonoBehaviour
     return null;
   }
 
-  public void MovePlayerShipTo(MapSpace space, PlayerShip ship)
+  public void MovePlayerShipTo(MapSpace space)
   {
     MapSpace current = GetCurrentSpace();
     if (current != null)
@@ -51,13 +49,13 @@ public class GameMap : MonoBehaviour
       current.ExitPlayer();
     }
 
-
     for (int i = 0; i < _spaces.Length; i++)
     {
       if (_spaces[i] == space)
       {
-        _spaces[i].EnterPlayer(ship);
+        _spaces[i].EnterPlayer(PlayerShip.ship);
         _spaces[i].ShowPlayerIndicator(true);
+        EnvironmentManager.DisplaySpace(_spaces[i]);
         return;
       }
     }
@@ -79,9 +77,11 @@ public class GameMap : MonoBehaviour
     }
   }
 
-  public void Confirm()
+  public void ConfirmMapSpace()
   {
     if (_selectedMapSpace != null)
-      GameManager.EnterSequence2(_selectedMapSpace.spaceName);
+      MovePlayerShipTo(_selectedMapSpace);
+
+    Debug.Log("Moving player, Enter sequence 2 from here?");
   }
 }
