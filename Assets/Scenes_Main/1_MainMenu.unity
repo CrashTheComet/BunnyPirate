@@ -119,38 +119,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &237643718
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 237643719}
-  m_Layer: 0
-  m_Name: AudioIntegration
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &237643719
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 237643718}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1849389568}
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1197652656
 GameObject:
   m_ObjectHideFlags: 0
@@ -240,6 +208,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1849389568}
   - component: {fileID: 1849389567}
+  - component: {fileID: 1849389569}
   m_Layer: 0
   m_Name: AudioManager
   m_TagString: Untagged
@@ -259,17 +228,40 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5fd3326cc9d39814298f90fddc76a1d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  masterMixer: {fileID: 24100000, guid: 75ff97dfc02c5d34990e41a0b8968098, type: 2}
+  musicMixerParameterName: MusicVolume
   soundGroups:
-  - groupName: BGM_Menu_V1
+  - groupName: MenuMusic
     isRandom: 0
     sounds:
-    - name: BGM_Menu_V1
-      clip: {fileID: 8300000, guid: f6d7e6c5360ef9141874dedf4383d26b, type: 3}
+    - name: MenuMusic
+      resourcePath: Sounds/MUSIC/BGM_MenuV1
+      mixerGroup: {fileID: -6741709784615043128, guid: 75ff97dfc02c5d34990e41a0b8968098, type: 2}
       volume: 1
       pitch: 1
       loop: 1
       source: {fileID: 0}
-  musicOnStart: BGM_Menu_V1
+      loadedClip: {fileID: 0}
+  - groupName: LevelMusic
+    isRandom: 0
+    sounds:
+    - name: LevelMusic
+      resourcePath: Sounds/MUSIC/BGM_Cave_Final
+      mixerGroup: {fileID: -6741709784615043128, guid: 75ff97dfc02c5d34990e41a0b8968098, type: 2}
+      volume: 1
+      pitch: 1
+      loop: 0
+      source: {fileID: 0}
+      loadedClip: {fileID: 0}
+  sceneMusicConfigs:
+  - sceneName: 1_MainMenu
+    musicGroupName: MenuMusic
+    prerollDuration: 0
+    beatsPerMinute: 75
+  - sceneName: 2_GameScene
+    musicGroupName: LevelMusic
+    prerollDuration: 4
+    beatsPerMinute: 172
 --- !u!4 &1849389568
 Transform:
   m_ObjectHideFlags: 0
@@ -279,12 +271,27 @@ Transform:
   m_GameObject: {fileID: 1849389566}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 237643719}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1849389569
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1849389566}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b5fd696fa9b83c4593c008608071f51, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  destroyOnLoad: 0
+  currentBeat: 0
+  isPerfectCombo: 0
 --- !u!1001 &826675280460318592
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -450,4 +457,4 @@ SceneRoots:
   - {fileID: 7969455085071359533}
   - {fileID: 826675280460318592}
   - {fileID: 1197652659}
-  - {fileID: 237643719}
+  - {fileID: 1849389568}
