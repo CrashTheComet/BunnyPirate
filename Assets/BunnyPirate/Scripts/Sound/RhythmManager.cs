@@ -33,6 +33,10 @@ public class RhythmManager : MonoBehaviour
     private int _currentGroupIndex = -1;
     private Coroutine _monitorCoroutine;
 
+    // --- Vertical Synchronization (NEW) ---
+    private double _schedulingTime; // The exact time on the AudioSettings.dspTime to schedule the next change
+    private const float SchedulingDelayMeasures = 1.0f; // Schedule changes one measure ahead (e.g., 4 beats)
+
     // --- Initialization & Scene Management ---
 
     void Awake()
@@ -107,6 +111,10 @@ public class RhythmManager : MonoBehaviour
             _monitorCoroutine = null;
         }
 
+        // Calculate and set the initial scheduling time, or reset it.
+        // We'll set the scheduling time once the first track starts playing.
+        _schedulingTime = 0; 
+
         // Start the first group in the sequence
         StartNextGroup();
     }
@@ -116,8 +124,6 @@ public class RhythmManager : MonoBehaviour
     /// </summary>
     public void StartNextGroup()
     {
-        // IMPORTANT: Stop any previous monitoring, especially if the current track was looping
-        // and is being skipped manually via RhythmGameTest.
         if (_monitorCoroutine != null)
         {
             StopCoroutine(_monitorCoroutine);
@@ -131,7 +137,6 @@ public class RhythmManager : MonoBehaviour
         if (_currentGroupIndex >= _musicSequence.Count)
         {
             Debug.Log("End of music sequence reached. Stopping music.");
-            // Stop all music for clean shutdown
             _audioManager.StopAllMusicGroups();
             return; 
         }
@@ -144,14 +149,21 @@ public class RhythmManager : MonoBehaviour
         {
             AudioSource baseSource = _audioManager.StartGroupImmediate(nextGroupName, baseLayerName);
             
-            // 4. Start monitoring for end of clip IF the clip is not set to loop.
-            if (baseSource != null && baseSource.clip != null && !baseSource.loop)
+            if (baseSource != null)
             {
-                _monitorCoroutine = StartCoroutine(MonitorMusicEnd(baseSource));
-            }
-            else if (baseSource != null && baseSource.loop)
-            {
-                Debug.LogWarning($"Group {nextGroupName} base layer is looping. Sequence will stop here unless explicitly triggered by external game logic (e.g., SkipToNextGroup in RhythmGameTest).");
+                // CRITICAL: Set the global scheduling time based on the base layer start time (immediate play)
+                // We use baseSource.dspTime which should be AudioSettings.dspTime.
+                _schedulingTime = AudioSettings.dspTime;
+                
+                // 4. Start monitoring for end of clip IF the clip is not set to loop.
+                if (baseSource.clip != null && !baseSource.loop)
+                {
+                    _monitorCoroutine = StartCoroutine(MonitorMusicEnd(baseSource));
+                }
+                else if (baseSource.loop)
+                {
+                    Debug.LogWarning($"Group {nextGroupName} base layer is looping. Sequence will stop here unless explicitly triggered by external game logic.");
+                }
             }
         }
     }
@@ -166,27 +178,59 @@ public class RhythmManager : MonoBehaviour
         
         Debug.Log($"Clip ended naturally. Triggering next group.");
 
-        // Clear the coroutine reference before starting the next group
         _monitorCoroutine = null; 
         
-        // Transition to the next group
         StartNextGroup();
     }
 
     // --- Layering Management ---
     
+    /// <summary>
+    /// Schedules a volume change for a music layer, ensuring it happens on the next musical beat boundary.
+    /// </summary>
     public void UpdateLayerVolume(string layerName, float targetVolume)
     {
-        if (!_layeringEnabled || _audioManager == null) return;
+        if (!_layeringEnabled || _audioManager == null || _schedulingTime == 0) return;
+
+        // Calculate the beat/measure duration based on the current BPM (assuming 4 beats per measure)
+        float beatDuration = GetSecondsPerBeat();
+        float measureDuration = beatDuration * 4.0f; 
         
+        // Calculate the time for the next musical boundary (next measure)
+        double currentDspTime = AudioSettings.dspTime;
+        double elapsedTimeSinceStart = currentDspTime - _schedulingTime;
+        
+        // Calculate how many full measures have passed
+        double measuresPassed = elapsedTimeSinceStart / measureDuration;
+        
+        // Calculate the DSP time of the next measure's start
+        // StartTime + (Ceiling(MeasuresPassed) * MeasureDuration)
+        double nextScheduleTime = _schedulingTime + (Math.Ceiling(measuresPassed) * measureDuration);
+        
+        // Ensure we schedule at least one audio frame ahead
+        if (nextScheduleTime <= currentDspTime)
+        {
+            nextScheduleTime += measureDuration;
+        }
+
+        double delay = nextScheduleTime - currentDspTime;
+        
+        // We use a fixed, short fade time (0.2s) for rapid combo transitions, 
+        // scheduled to start at the exact musical boundary.
         const float fadeTime = 0.2f; 
         
-        _audioManager.SetLayerVolume(layerName, targetVolume, fadeTime);
+        _audioManager.ScheduleLayerVolumeChange(layerName, targetVolume, fadeTime, nextScheduleTime);
+        Debug.Log($"Layer '{layerName}': Scheduled volume change to {targetVolume} in {delay:F3}s at DSP time {nextScheduleTime:F3}");
     }
     
     // --- Helper Methods ---
     public float GetSecondsPerBeat()
     {
+        // Safety check to prevent division by zero
+        if (_currentGroupConfig == null || _currentGroupConfig.BPM <= 0)
+        {
+            return 0.5f; // Default value for safety
+        }
         return 60f / _currentGroupConfig.BPM;
     }
 

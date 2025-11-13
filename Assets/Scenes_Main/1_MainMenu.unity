@@ -237,6 +237,7 @@ MonoBehaviour:
     sounds:
     - name: BGM_MenuV1
       clip: {fileID: 8300000, guid: f6d7e6c5360ef9141874dedf4383d26b, type: 3}
+      outputMixerGroup: {fileID: -6741709784615043128, guid: 75ff97dfc02c5d34990e41a0b8968098, type: 2}
       volume: 1
       pitch: 1
       loop: 1
@@ -244,6 +245,7 @@ MonoBehaviour:
     sounds:
     - name: Base
       clip: {fileID: 8300000, guid: c29a3ae53e022d74f84135f25236b61a, type: 3}
+      outputMixerGroup: {fileID: -6741709784615043128, guid: 75ff97dfc02c5d34990e41a0b8968098, type: 2}
       volume: 1
       pitch: 1
       loop: 0
@@ -251,16 +253,19 @@ MonoBehaviour:
     sounds:
     - name: Base
       clip: {fileID: 8300000, guid: 7576c9fdc9528ce46b950ad49fde1e1c, type: 3}
+      outputMixerGroup: {fileID: 8244899541204027478, guid: 75ff97dfc02c5d34990e41a0b8968098, type: 2}
       volume: 1
       pitch: 1
       loop: 1
     - name: Layer 1
       clip: {fileID: 8300000, guid: 049137acf4c241849889dac27765bf6f, type: 3}
+      outputMixerGroup: {fileID: 5354395081224667101, guid: 75ff97dfc02c5d34990e41a0b8968098, type: 2}
       volume: 0
       pitch: 1
       loop: 1
     - name: Layer 2
       clip: {fileID: 8300000, guid: caa837451fcdad742a811acd2edd64fc, type: 3}
+      outputMixerGroup: {fileID: 5900426622068020093, guid: 75ff97dfc02c5d34990e41a0b8968098, type: 2}
       volume: 0
       pitch: 1
       loop: 1
@@ -268,16 +273,19 @@ MonoBehaviour:
     sounds:
     - name: Base
       clip: {fileID: 8300000, guid: ce4234b65136a8b4ead7b7ea5868880d, type: 3}
+      outputMixerGroup: {fileID: 8244899541204027478, guid: 75ff97dfc02c5d34990e41a0b8968098, type: 2}
       volume: 1
       pitch: 1
       loop: 1
     - name: Layer 1
       clip: {fileID: 8300000, guid: f66caa47940012d4ba2d5e71d2550bea, type: 3}
+      outputMixerGroup: {fileID: 5354395081224667101, guid: 75ff97dfc02c5d34990e41a0b8968098, type: 2}
       volume: 0
       pitch: 1
       loop: 1
     - name: Layer 2
       clip: {fileID: 8300000, guid: 07fb965be1271614781f1c1655058167, type: 3}
+      outputMixerGroup: {fileID: 5900426622068020093, guid: 75ff97dfc02c5d34990e41a0b8968098, type: 2}
       volume: 0
       pitch: 1
       loop: 1
@@ -285,6 +293,7 @@ MonoBehaviour:
     sounds:
     - name: Base
       clip: {fileID: 8300000, guid: 30cb27d84d8e1ca4dba722cf69a048e8, type: 3}
+      outputMixerGroup: {fileID: -6741709784615043128, guid: 75ff97dfc02c5d34990e41a0b8968098, type: 2}
       volume: 1
       pitch: 1
       loop: 0
@@ -293,16 +302,19 @@ MonoBehaviour:
     sounds:
     - name: SFX_Normal
       clip: {fileID: 8300000, guid: 94ac34d627534cb408c591cb1ab4baa7, type: 3}
+      outputMixerGroup: {fileID: 0}
       volume: 1
       pitch: 1
       loop: 0
     - name: SFX_Hit_Perfect
       clip: {fileID: 8300000, guid: 3c88698a02a248b429ce435451a4729d, type: 3}
+      outputMixerGroup: {fileID: 0}
       volume: 1
       pitch: 1
       loop: 0
     - name: SFX_Hit_Miss
       clip: {fileID: 8300000, guid: 7e50b8dc147802349bc0b0c400fdf9bc, type: 3}
+      outputMixerGroup: {fileID: 0}
       volume: 1
       pitch: 1
       loop: 0
