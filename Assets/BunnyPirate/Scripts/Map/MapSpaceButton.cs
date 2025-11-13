@@ -3,32 +3,34 @@ using UnityEngine.UI;
 
 public class MapSpaceButton : MonoBehaviour
 {
-  public string spaceName;
+  [HideInInspector] public string _spaceName;
 
-  Button button;
+  Button _button;
+  GameMap _map;
 
   void Awake()
   {
-    button = GetComponent<Button>();
+    _button = GetComponent<Button>();
   }
 
-  public void SetName(string name)
+  public void Set(string name, GameMap map)
   {
     ClearEvents();
 
-    spaceName = name;
+    _spaceName = name;
+    _map = map;
 
-    if (button == null)
-      button = GetComponent<Button>();
+    if (_button == null)
+      _button = GetComponent<Button>();
 
-    button.onClick.AddListener(() => { GameManager.TrySelectMapSpace(spaceName); });
+    _button.onClick.AddListener(() => { _map.SelectMapSpace(_spaceName); });
   }
 
   private void ClearEvents()
   {
-    if (button == null)
-      button = GetComponent<Button>();
+    if (_button == null)
+      _button = GetComponent<Button>();
 
-    button.onClick.RemoveAllListeners();
+    _button.onClick.RemoveAllListeners();
   }
 }

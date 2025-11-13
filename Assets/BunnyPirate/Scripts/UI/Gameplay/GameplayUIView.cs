@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class GameplayUIView : MonoBehaviour, IGameplayUI
+public class GameplayUIView : MonoBehaviour
 {
   [SerializeField] GameObject sequence1Panel;
   public void ShowSequence(int sequence)
