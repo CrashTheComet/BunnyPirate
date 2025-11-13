@@ -284,8 +284,6 @@ GameObject:
   - component: {fileID: 2642812206165977229}
   - component: {fileID: 6370253421140572517}
   - component: {fileID: 401347448291757535}
-  - component: {fileID: 5985229970667442727}
-  - component: {fileID: 8594600974208392526}
   m_Layer: 5
   m_Name: GameplayCanvas
   m_TagString: Untagged
@@ -376,33 +374,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &5985229970667442727
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1021671963549501563}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cbfcc7fc9cae36e4dadb984af7e3bfd3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GameplayUIController
-  _gameplayUIView: {fileID: 8594600974208392526}
-  _sequence1View: {fileID: 3384048043095004905}
---- !u!114 &8594600974208392526
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1021671963549501563}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 52551333d5b91eb429a238297f915df1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GameplayUIView
-  sequence1Panel: {fileID: 7548001500489409221}
 --- !u!1 &1040041713476585858
 GameObject:
   m_ObjectHideFlags: 0
