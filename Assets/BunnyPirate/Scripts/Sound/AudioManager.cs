@@ -1,80 +1,125 @@
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Audio;
+using System;
+using System.Collections.Generic;
 using UnityEngine.SceneManagement;
-using System.Collections;
 using System.Linq;
+using System.Collections; // Required for Coroutines
 
-// --- DATA STRUCTURES ---
-
-// Sound Data Class (now holds a string path instead of the AudioClip itself)
-[System.Serializable]
+// Sound Class: Represents an individual audio track.
+[Serializable]
 public class Sound
 {
     public string name;
-    [Tooltip("Path to the audio file inside an 'Assets/Resources' folder (e.g., Music/BGM_Level1).")]
-    public string resourcePath; 
-    
-    public AudioMixerGroup mixerGroup;
-
+    public AudioClip clip;
     [Range(0f, 1f)]
     public float volume = 1f;
-
     [Range(.1f, 3f)]
     public float pitch = 1f;
-
     public bool loop;
-
-    // Runtime component and loaded clip
-    [HideInInspector] public AudioSource source;
-    [HideInInspector] public AudioClip loadedClip; // Stores the clip once loaded from Resources
-}
-
-// Maps music settings to a specific scene name
-[System.Serializable]
-public class SceneMusicMapping
-{
-    public string sceneName;
-    [Tooltip("The name of the SoundGroup (e.g., 'Level1Layers') that contains all music tracks.")]
-    public string musicGroupName; 
-    [Tooltip("Delay before music starts (in seconds). Useful for prerolls.")]
-    public float prerollDuration = 0f;
     
-    [Tooltip("The Beats Per Minute of this specific music track.")]
-    public float beatsPerMinute = 120f; 
+    [HideInInspector]
+    public AudioSource source;
+
+    public void Setup(AudioSource src)
+    {
+        source = src;
+        source.clip = clip;
+        source.volume = volume;
+        source.pitch = pitch;
+        source.loop = loop;
+    }
 }
 
-[System.Serializable]
+// SoundGroup Class: Group of audio tracks (e.g., Intro, Loop A)
+[Serializable]
 public class SoundGroup
 {
     public string groupName;
-    public bool isRandom;
-    public List<Sound> sounds;
+    public Sound[] sounds;
+    
+    [NonSerialized]
+    public AudioSource mainSource; // Main source for reference
+
+    public void Initialize(GameObject parent, float defaultVolume)
+    {
+        GameObject parentObject = new GameObject(groupName);
+        parentObject.transform.SetParent(parent.transform);
+
+        foreach (var sound in sounds)
+        {
+            AudioSource src = parentObject.AddComponent<AudioSource>();
+            sound.Setup(src);
+
+            if (mainSource == null)
+            {
+                mainSource = src;
+            }
+        }
+    }
+    
+    public Sound GetSound(string soundName)
+    {
+        return sounds.FirstOrDefault(s => s.name.Equals(soundName, StringComparison.OrdinalIgnoreCase));
+    }
 }
 
-// --- MAIN MANAGER ---
+// SceneMusicMapping: Music configuration per scene.
+[Serializable]
+public class SceneMusicMapping
+{
+    public string sceneName;
+    public float bpm = 120f;
+    
+    [Header("Track Configuration")]
+    public string initialMusicGroupName; 
+    public float introDurationSeconds = 5.0f; 
+    public string loopAMusicGroupName; 
+    public string loopBMusicGroupName; 
+    
+    [Header("Layering Configuration")]
+    [Tooltip("Enables/disables layering via combo.")]
+    public bool enableLayering = false; 
+}
+
 
 public class AudioManager : MonoBehaviour
 {
-    public static AudioManager instance; 
-    
-    public AudioMixer masterMixer; 
-    [Tooltip("Name of the exposed mixer parameter used to fade the Music Group (e.g., 'MusicVolume').")]
-    public string musicMixerParameterName = "MusicVolume"; 
-    
-    public List<SoundGroup> soundGroups;
-    public List<SceneMusicMapping> sceneMusicConfigs;
+    public static AudioManager instance;
 
-    private Dictionary<string, List<Sound>> soundDictionary;
-    private double musicStartTimeDSP;
+    [Header("Global Settings")]
+    [Range(0f, 1f)]
+    public float masterVolume = 1f;
+
+    [Header("Music Groups")]
+    public SoundGroup[] musicGroups; 
+    
+    [Header("SFX Group")]
+    public SoundGroup sfxGroup; 
+
+    [Header("Scene Music Configuration")]
+    public SceneMusicMapping[] sceneMusicConfigs;
+
+    // Internal State
+    private Dictionary<string, SoundGroup> _musicGroupMap;
+    private SceneMusicMapping _currentSceneConfig;
+    private double _musicStartTimeDSP = 0.0;
+    private SoundGroup _currentMusicGroup;
+
+    // External access to the DSP start time
+    public double GetMusicStartTimeDSP() => _musicStartTimeDSP;
+    
+    // External access to the current configuration
+    public SceneMusicMapping GetCurrentSceneConfig()
+    {
+        return _currentSceneConfig;
+    }
 
     void Awake()
     {
-        // Singleton setup and persistence
         if (instance == null)
         {
             instance = this;
-            DontDestroyOnLoad(gameObject); 
+            DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -82,221 +127,233 @@ public class AudioManager : MonoBehaviour
             return;
         }
 
-        soundDictionary = new Dictionary<string, List<Sound>>();
-        
-        // Initialization: Create AudioSources for all defined sounds
-        foreach (SoundGroup soundGroup in soundGroups)
-        {
-            soundDictionary[soundGroup.groupName] = soundGroup.sounds;
-
-            foreach (Sound s in soundGroup.sounds)
-            {
-                s.source = gameObject.AddComponent<AudioSource>();
-                s.source.volume = s.volume;
-                s.source.pitch = s.pitch;
-                s.source.loop = s.loop;
-                s.source.playOnAwake = false;
-                
-                if (s.mixerGroup != null)
-                {
-                    s.source.outputAudioMixerGroup = s.mixerGroup;
-                }
-            }
-        }
-        
+        InitializeAudioSystem();
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
-    
+
     void OnDestroy()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
-    // --- SCENE & BPM MANAGEMENT ---
-
-    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    private void InitializeAudioSystem()
     {
-        HandleSceneMusic(scene.name);
+        _musicGroupMap = new Dictionary<string, SoundGroup>();
         
-        // Notify RhythmManager that the music is scheduled (if it exists)
-        RhythmManager.instance?.MusicLoadedAndScheduled(); 
+        // Initialization of Music Groups
+        GameObject musicParent = new GameObject("Music Groups");
+        musicParent.transform.SetParent(transform);
+        foreach (var group in musicGroups)
+        {
+            group.Initialize(musicParent, masterVolume);
+            _musicGroupMap.Add(group.groupName, group);
+        }
+
+        // Initialization of SFX Group
+        GameObject sfxParent = new GameObject("SFX Group");
+        sfxParent.transform.SetParent(transform);
+        if (sfxGroup != null)
+        {
+            sfxGroup.Initialize(sfxParent, masterVolume);
+            _musicGroupMap.Add(sfxGroup.groupName, sfxGroup); 
+        }
     }
 
-    private SceneMusicMapping GetCurrentSceneConfig(string sceneName)
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        return sceneMusicConfigs.Find(cfg => cfg.sceneName == sceneName);
+        // Stop the previous group if necessary
+        if (_currentMusicGroup != null)
+        {
+            foreach (var sound in _currentMusicGroup.sounds)
+            {
+                if (sound.source != null && sound.source.isPlaying)
+                {
+                    sound.source.Stop();
+                }
+            }
+            _currentMusicGroup.mainSource = null;
+            _currentMusicGroup = null;
+        }
+        
+        HandleSceneMusic(scene.name);
     }
-
-    // Exposes the BPM to the RhythmManager
-    public float GetCurrentBPM()
-    {
-        SceneMusicMapping config = GetCurrentSceneConfig(SceneManager.GetActiveScene().name);
-        return (config != null) ? config.beatsPerMinute : 120f; // Default 120
-    }
-
-    // Exposes the DSP Time when music started
-    public double GetMusicStartTimeDSP()
-    {
-        return musicStartTimeDSP;
-    }
-
-    // --- MUSIC LAYER HANDLING ---
-
+    
+    // Starts the initial track for the scene
     private void HandleSceneMusic(string sceneName)
     {
-        SceneMusicMapping config = GetCurrentSceneConfig(sceneName);
-        StopAllSounds(); 
+        _currentSceneConfig = sceneMusicConfigs.FirstOrDefault(c => c.sceneName == sceneName);
 
-        if (config == null)
+        if (_currentSceneConfig == null)
         {
-            Debug.Log($"AudioManager: No music configured for scene {sceneName}.");
-            return;
-        }
-        
-        // Start all sounds in the group, scheduled
-        StartGroupScheduled(config.musicGroupName, config.prerollDuration);
-    }
-    
-    // Starts all sounds in a group at the exact same DSP time (crucial for layered music)
-    public void StartGroupScheduled(string groupName, float prerollDelay)
-    {
-        if (!soundDictionary.ContainsKey(groupName))
-        {
-            Debug.LogWarning($"Sound Group: {groupName} not found!");
+            Debug.LogWarning($"No music configuration found for scene: {sceneName}");
             return;
         }
 
-        double scheduledTime = AudioSettings.dspTime + prerollDelay;
-        musicStartTimeDSP = scheduledTime; // Store the exact start time
-
-        List<Sound> sounds = soundDictionary[groupName];
-
-        foreach (Sound s in sounds)
+        if (!string.IsNullOrEmpty(_currentSceneConfig.initialMusicGroupName))
         {
-            // Load the clip dynamically if not already loaded
-            if (s.loadedClip == null)
-            {
-                s.loadedClip = Resources.Load<AudioClip>(s.resourcePath);
-                if (s.loadedClip == null)
-                {
-                    Debug.LogError($"Failed to load AudioClip from Resources at path: {s.resourcePath}");
-                    continue;
-                }
-                s.source.clip = s.loadedClip;
-            }
+            // Schedule immediate start of the intro
+            StartGroupScheduled(_currentSceneConfig.initialMusicGroupName, 0f);
+        }
+    }
 
-            // Schedule all layers to the exact same DSP time
-            s.source.PlayScheduled(scheduledTime);
-            
-            // Set the initial volume (important for layers that start muted)
-            s.source.volume = s.volume;
+    /// <summary>
+    /// Schedules a music group to start at a specific DSP time.
+    /// (Horizontal Control: Start)
+    /// </summary>
+    public void StartGroupScheduled(string groupName, float delaySeconds)
+    {
+        if (!_musicGroupMap.TryGetValue(groupName, out SoundGroup group))
+        {
+            Debug.LogError($"Music Group '{groupName}' not found!");
+            return;
+        }
+
+        _currentMusicGroup = group;
+        _currentMusicGroup.mainSource = _currentMusicGroup.sounds.Length > 0 ? _currentMusicGroup.sounds[0].source : null;
+        
+        if (_currentMusicGroup.mainSource == null || _currentMusicGroup.mainSource.clip == null)
+        {
+            Debug.LogError($"The main source of group '{groupName}' has no AudioClip assigned.");
+            return;
         }
         
-        Debug.Log($"Music Group '{groupName}' scheduled to start at dspTime {scheduledTime}");
-    }
-
-    // Function used by RhythmManager to control layered music volume
-    public void SetLayerVolume(string soundName, float targetVolume)
-    {
-        foreach (SoundGroup group in soundGroups)
+        double scheduledStartTime = AudioSettings.dspTime + delaySeconds;
+        _musicStartTimeDSP = scheduledStartTime;
+        
+        // Schedule the start of all sounds in the group
+        foreach (var sound in _currentMusicGroup.sounds)
         {
-            Sound s = group.sounds.Find(sound => sound.name == soundName);
-            if (s != null && s.source != null)
+            if (sound.source != null)
             {
-                s.source.volume = Mathf.Clamp01(targetVolume);
-                return;
-            }
-        }
-        Debug.LogWarning($"Layer Sound: {soundName} not found!");
-    }
-
-    // --- UTILITY PLAYBACK ---
-
-    public void PlayNormalSound(string name, double delay = 0)
-    {
-        foreach (var soundGroup in soundGroups)
-        {
-            Sound s = soundGroup.sounds.Find(sound => sound.name == name);
-            if (s != null)
-            {
-                // Load clip if necessary
-                if (s.loadedClip == null)
-                {
-                    s.loadedClip = Resources.Load<AudioClip>(s.resourcePath);
-                    if (s.loadedClip == null) { Debug.LogError($"Failed to load AudioClip: {s.resourcePath}"); return; }
-                    s.source.clip = s.loadedClip;
-                }
+                sound.source.loop = sound.loop; 
+                sound.source.PlayScheduled(scheduledStartTime);
                 
-                // Play SFX immediately or scheduled
-                if (delay > 0)
+                // Set layers to volume 0 if they are configured that way
+                if (sound.volume == 0)
                 {
-                    s.source.PlayScheduled(AudioSettings.dspTime + delay);
+                    sound.source.volume = 0;
                 }
-                else
-                {
-                    s.source.Play();
-                }
-                return;
             }
         }
-        Debug.LogWarning($"Sound: {name} not found!");
-    }
-
-    // --- TRANSITION AND MIX FUNCTIONS ---
-    
-    public void FadeMusicOut(float duration)
-    {
-        // -80dB is effectively mute
-        FadeMixerParameter(musicMixerParameterName, -80f, duration); 
-    }
-
-    public void FadeMixerParameter(string mixerParameterName, float targetVolumeDb, float duration)
-    {
-        if (masterMixer == null || string.IsNullOrEmpty(mixerParameterName)) return;
         
-        StopAllCoroutines(); 
-        StartCoroutine(StartFade(mixerParameterName, targetVolumeDb, duration));
+        Debug.Log($"Music Group '{groupName}' scheduled to start at dspTime {scheduledStartTime:F3}");
     }
     
-    private IEnumerator StartFade(string exposedParam, float targetVolumeDb, float duration)
+    /// <summary>
+    /// Schedules the transition from one group to another at a precise DSP time (synchronized).
+    /// (Horizontal Control: Transition)
+    /// </summary>
+    public void SwitchGroupScheduled(string oldGroupName, string newGroupName, double dspTime)
     {
-        float currentTime = 0;
-        float currentVol;
-        masterMixer.GetFloat(exposedParam, out currentVol);
-
-        // Convert dB to linear for smooth Lerp
-        float currentLinearVol = Mathf.Pow(10, currentVol / 20); 
-        float targetLinearVol = Mathf.Pow(10, targetVolumeDb / 20); 
-        
-        while (currentTime < duration)
+        // 1. SCHEDULED START of the new group
+        if (_musicGroupMap.TryGetValue(newGroupName, out SoundGroup newGroup))
         {
-            currentTime += Time.deltaTime;
-            float newLinearVol = Mathf.Lerp(currentLinearVol, targetLinearVol, currentTime / duration);
-            // Convert back to dB for the Mixer
-            masterMixer.SetFloat(exposedParam, Mathf.Log10(newLinearVol) * 20); 
-            yield return null;
-        }
-    }
+            _currentMusicGroup = newGroup;
+            _currentMusicGroup.mainSource = _currentMusicGroup.sounds.Length > 0 ? _currentMusicGroup.sounds[0].source : null;
 
-    public void StopAllSounds()
-    {
-        foreach (SoundGroup group in soundGroups)
-        {
-            foreach (Sound s in group.sounds)
+            // Schedule the start of all tracks in the new group
+            foreach (var sound in _currentMusicGroup.sounds)
             {
-                if (s.source != null && s.source.isPlaying)
+                if (sound.source != null)
                 {
-                    s.source.Stop();
+                    sound.source.loop = sound.loop;
+                    sound.source.PlayScheduled(dspTime);
+                    
+                    if (sound.volume == 0)
+                    {
+                        sound.source.volume = 0;
+                    }
+                }
+            }
+
+            _musicStartTimeDSP = dspTime; // Update start time for synchronization
+            
+            Debug.Log($"Transition from '{oldGroupName}' to '{newGroupName}' scheduled at dspTime {dspTime:F3}");
+        }
+        else
+        {
+            Debug.LogError($"New Music Group '{newGroupName}' not found for transition.");
+        }
+        
+        // 2. IMMEDIATE STOP of the old group
+        if (_musicGroupMap.TryGetValue(oldGroupName, out SoundGroup oldGroup))
+        {
+            foreach (var sound in oldGroup.sounds)
+            {
+                if (sound.source != null && sound.source.isPlaying)
+                {
+                    sound.source.Stop(); 
                 }
             }
         }
     }
-    
-    public Sound FindSoundByName(string name)
+
+    /// <summary>
+    /// Sets the volume of a specific layer with a smooth fade.
+    /// (Vertical Control: Layering)
+    /// </summary>
+    public void SetLayerVolume(string groupName, string layerName, float targetVolume, float fadeTime)
     {
-        // Search through all groups to find the sound
-        return soundGroups
-            .SelectMany(group => group.sounds)
-            .FirstOrDefault(sound => sound.name == name);
+        if (!_musicGroupMap.TryGetValue(groupName, out SoundGroup group))
+        {
+            Debug.LogWarning($"Music group '{groupName}' does not exist or is not active.");
+            return; 
+        }
+
+        Sound layerSound = group.GetSound(layerName);
+        if (layerSound == null)
+        {
+            Debug.LogWarning($"Layer: '{layerName}' not found in group '{groupName}'!");
+            return;
+        }
+        
+        // Start the track if it is stopped and the target volume is positive
+        if (targetVolume > 0 && !layerSound.source.isPlaying)
+        {
+            // IMPORTANT: Use Play() to join the currently running track
+            layerSound.source.Play(); 
+        }
+
+        // Start the Coroutine for the volume fade
+        StartCoroutine(FadeVolume(layerSound.source, targetVolume * masterVolume, fadeTime));
+    }
+    
+    // Coroutine for volume fade.
+    private IEnumerator FadeVolume(AudioSource source, float targetVolume, float duration)
+    {
+        float startVolume = source.volume;
+        float startTime = Time.time;
+        
+        while (Time.time < startTime + duration)
+        {
+            float elapsed = Time.time - startTime;
+            float t = elapsed / duration;
+            source.volume = Mathf.Lerp(startVolume, targetVolume, t);
+            yield return null; 
+        }
+
+        // Ensure exact volume at the end
+        source.volume = targetVolume;
+
+        // If the target volume is close to zero, stop the source
+        if (targetVolume <= 0.01f)
+        {
+            source.Stop();
+        }
+    }
+    
+    // Simple method to play an SFX (unsynchronized)
+    public void PlayNormalSound(string soundName)
+    {
+        if (sfxGroup == null) return;
+
+        Sound s = sfxGroup.GetSound(soundName);
+        if (s == null)
+        {
+            Debug.LogWarning($"SFX Sound: {soundName} not found in SFX Group!");
+            return;
+        }
+
+        s.source.Play(); 
     }
 }

@@ -1,117 +1,167 @@
 using UnityEngine;
 using System.Collections;
-using System;
+using System.Linq;
+using UnityEngine.SceneManagement;
+using System.Collections.Generic;
 
-// BPM synchronization with audio/visual events
-public class RhythmManager : Singleton<RhythmManager>
+/// <summary>
+/// Manages the game's rhythmic synchronization, BPM, and musical section changes.
+/// </summary>
+public class RhythmManager : MonoBehaviour
 {
-    //Rhythm Configuration
-    
-    // Update interval for the metronome check (0.01s = 10ms)
-    private const float METRONOME_UPDATE_INTERVAL = 0.01f; 
-    
-    private float currentBPM;
-    private double musicStartTimeDSP; //more precise than "Unity Time"
-    private float secondsPerBeat;
-    
-    private Coroutine rhythmCoroutine;
-    private bool isRhythmSequenceActive = false;
-    
-    //Arrows Score
-    [Header("Rhythm State")]
-    public int currentBeat = 0;
-    public bool isPerfectCombo = false; // Flag to control musical Layering
+    public static RhythmManager instance;
 
-    protected override void Awake()
+    // --- Configuration (visible in the Inspector) ---
+    [Header("Layer Configuration")]
+    [Tooltip("Fade duration for layer volume changes.")]
+    public float layerFadeTime = 0.5f;
+    
+    [Tooltip("Name of the base layer (must match the Sound name in AudioManager).")]
+    public string baseLayerName = "Base"; // New name for the always-active layer
+    
+    [Tooltip("Name of Layer 1, disabled only on Miss.")]
+    public string layer1Name = "Layer 1";
+    
+    [Tooltip("Name of Layer 2, activated only by the Perfect combo.")]
+    public string layer2Name = "Layer 2"; 
+    
+    // --- Internal State ---
+    private AudioManager _audioManager;
+    private SceneMusicMapping _currentSceneConfig;
+    private double _secondsPerBeat;
+    private double _musicStartDSPTime; // Start time of the track according to Unity's DSP
+    
+    void Awake()
     {
-        base.Awake();
-        // GameManager.Register(this); // Registration placeholder
-    }
-
-    // Called by the GameManager when the player enters the rhythm sequence
-    public void StartRhythmSequence()
-    {
-        if (isRhythmSequenceActive) return;
-
-        // Music is typically started/scheduled by AudioManager in OnSceneLoaded
-        // Serves as an entry from GameManager
-    }
-    
-    // Called by the AudioManager immediately after music has been scheduled to start
-    public void MusicLoadedAndScheduled()
-    {
-        if (isRhythmSequenceActive) return;
-        
-        currentBPM = AudioManager.instance.GetCurrentBPM();
-        musicStartTimeDSP = AudioManager.instance.GetMusicStartTimeDSP();
-        secondsPerBeat = 60f / currentBPM;
-
-        Debug.Log($"Rhythm Sequence Started. BPM: {currentBPM}, Time per Beat: {secondsPerBeat:F3}s.");
-
-        isRhythmSequenceActive = true;
-        rhythmCoroutine = StartCoroutine(BeatTickLoop());
-    }
-
-    // Game metronome that checks for beat timing
-    private IEnumerator BeatTickLoop()
-    {
-        currentBeat = 0;
-        
-        while (isRhythmSequenceActive)
+        // Singleton Implementation
+        if (instance == null)
         {
-            // time elapsed since music started
-            double elapsedTimeDSP = AudioSettings.dspTime - musicStartTimeDSP;
-
-            // Next beat's DSP time
-            int beatsPassed = (int)Math.Floor(elapsedTimeDSP / secondsPerBeat);
-            double nextBeatTimeDSP = musicStartTimeDSP + (beatsPassed + 1) * secondsPerBeat;
-
-            // Delay calculation until next beat
-            double delayUntilNextBeat = nextBeatTimeDSP - AudioSettings.dspTime;
-            
-            // If very close to beat time, execute actions
-            if (delayUntilNextBeat < METRONOME_UPDATE_INTERVAL)
-            {
-                currentBeat++;
-                
-                //BEAT ACTIONS
-                
-                // Visual Trigger (Note Drop)
-                // Example: NotesTrack.instance.DropNote(currentBeat % 3); 
-                
-                //Audio Layering/SFX
-                HandleLayering();
-                //e.g. AudioManager.instance.PlayNormalSound("SFX_MetronomeTick", (float)delayUntilNextBeat);
-            }
-
-            // Waiting for next interval check
-            yield return new WaitForSeconds(METRONOME_UPDATE_INTERVAL);
-        }
-    }
-    
-    // Logic to dynamically control musical layers based on game state
-    private void HandleLayering()
-    {
-        // e.g. If player hits perfect, Layer 1 is fully on
-        float targetVolume = isPerfectCombo ? 1f : 0f;
-        
-        // In/Out fader for the Layer
-        AudioManager.instance.SetLayerVolume("BGM_Layer_1_Melody", targetVolume); 
-    }
-    
-    // Called by other game scripts (e.g. NotesTrack) on hit/miss.
-    public void UpdatePlayerPerformance(bool success)
-    {
-        isPerfectCombo = success;
-        
-        // SFX feedback
-        if (success)
-        {
-            AudioManager.instance.PlayNormalSound("SFX_NoteHit", 0);
+            instance = this;
+            DontDestroyOnLoad(gameObject);
         }
         else
         {
-            AudioManager.instance.PlayNormalSound("SFX_BadInput", 0);
+            Destroy(gameObject);
+            return;
         }
+
+        // Find the AudioManager (CS0618 warning fix)
+        _audioManager = FindFirstObjectByType<AudioManager>();
+        if (_audioManager == null)
+        {
+            Debug.LogError("RhythmManager requires an AudioManager instance in the scene.");
+        }
+
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+    
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // Initialize the rhythm system for the new scene
+        InitializeRhythmSystem();
+    }
+    
+    // --- Main Rhythm Logic ---
+
+    private void InitializeRhythmSystem()
+    {
+        if (_audioManager == null)
+        {
+            Debug.LogError("Cannot initialize rhythm system: AudioManager is missing.");
+            return;
+        }
+
+        // Get the current scene configuration
+        _currentSceneConfig = _audioManager.GetCurrentSceneConfig();
+        
+        if (_currentSceneConfig == null)
+        {
+            Debug.LogWarning("No scene music configuration found. Using default BPM (120).");
+            // Use a default BPM if configuration is missing
+            _secondsPerBeat = 60.0 / 120.0;
+            return;
+        }
+        
+        float currentBPM = _currentSceneConfig.bpm;
+        _secondsPerBeat = 60.0 / currentBPM;
+        
+        Debug.Log($"Rhythm Manager Initialized. BPM: {currentBPM} ({_secondsPerBeat:F2} seconds per beat). Layering Enabled: {_currentSceneConfig.enableLayering}");
+
+        // Start the music sequence management coroutine (Horizontal transition)
+        StartCoroutine(MusicSequenceHandler());
+    }
+
+    /// <summary>
+    /// Manages the Intro -> Loop A sequence. (Horizontal Transition)
+    /// </summary>
+    private IEnumerator MusicSequenceHandler()
+    {
+        // Wait for one frame to ensure AudioManager has finished scheduling the start
+        yield return null; 
+        _musicStartDSPTime = _audioManager.GetMusicStartTimeDSP();
+        
+        float introDuration = _currentSceneConfig.introDurationSeconds;
+        
+        Debug.Log($"[DEBUG] Intro Duration read from configuration: {introDuration:F3} seconds.");
+        
+        if (introDuration > 0)
+        {
+            // Calculate the precise DSP time when the intro ends
+            double waitTimeDSP = _musicStartDSPTime + introDuration;
+            
+            // Wait until that time is reached
+            while (AudioSettings.dspTime < waitTimeDSP)
+            {
+                yield return null;
+            }
+
+            // Perform the transition
+            if (!string.IsNullOrEmpty(_currentSceneConfig.loopAMusicGroupName))
+            {
+                RequestMusicGroupSwitch(_currentSceneConfig.loopAMusicGroupName);
+            }
+        }
+        else
+        {
+            Debug.LogWarning("Invalid Intro Duration (<= 0). No automatic transition scheduled.");
+        }
+    }
+    
+    /// <summary>
+    /// Requests the AudioManager to switch music groups on the next beat.
+    /// </summary>
+    public void RequestMusicGroupSwitch(string groupName)
+    {
+        double currentDSP = AudioSettings.dspTime;
+        double timeSinceStart = currentDSP - _musicStartDSPTime;
+
+        // Calculate the number of full beats that have passed
+        double totalBeatsPassed = timeSinceStart / _secondsPerBeat;
+        
+        // Calculate the DSP time of the next beat (for a synchronized transition)
+        double nextBeatDSP = _musicStartDSPTime + (Mathf.Ceil((float)totalBeatsPassed) * _secondsPerBeat);
+        
+        Debug.Log($"Transition requested from '{_currentSceneConfig.initialMusicGroupName}' to '{groupName}'. Scheduled at dspTime {nextBeatDSP:F3}.");
+
+        _audioManager.SwitchGroupScheduled(_currentSceneConfig.initialMusicGroupName, groupName, nextBeatDSP);
+    }
+
+    /// <summary>
+    /// Updates the volume of a musical layer (Vertical Layering).
+    /// </summary>
+    public void UpdateLayerVolume(string layerName, float targetVolume)
+    {
+        if (_currentSceneConfig == null || !_currentSceneConfig.enableLayering || _audioManager == null) return;
+        
+        // Assume the music group to modify is the loop A group (the currently playing group)
+        string currentGroupName = _currentSceneConfig.loopAMusicGroupName; 
+        
+        // Call the AudioManager's fade method
+        _audioManager.SetLayerVolume(currentGroupName, layerName, targetVolume, layerFadeTime);
     }
 }
