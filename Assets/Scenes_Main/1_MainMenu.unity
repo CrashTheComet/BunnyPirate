@@ -230,6 +230,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5fd3326cc9d39814298f90fddc76a1d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  masterMixer: {fileID: 24100000, guid: 75ff97dfc02c5d34990e41a0b8968098, type: 2}
   masterVolume: 1
   musicGroups:
   - groupName: Menu
@@ -239,15 +240,13 @@ MonoBehaviour:
       volume: 1
       pitch: 1
       loop: 1
-      source: {fileID: 0}
   - groupName: BGM_Cave_Intro
     sounds:
-    - name: BGM_Cave_Intro
+    - name: Base
       clip: {fileID: 8300000, guid: c29a3ae53e022d74f84135f25236b61a, type: 3}
       volume: 1
       pitch: 1
       loop: 0
-      source: {fileID: 0}
   - groupName: BGM_LOOP_A
     sounds:
     - name: Base
@@ -255,19 +254,16 @@ MonoBehaviour:
       volume: 1
       pitch: 1
       loop: 1
-      source: {fileID: 0}
     - name: Layer 1
       clip: {fileID: 8300000, guid: 049137acf4c241849889dac27765bf6f, type: 3}
       volume: 0
       pitch: 1
       loop: 1
-      source: {fileID: 0}
     - name: Layer 2
       clip: {fileID: 8300000, guid: caa837451fcdad742a811acd2edd64fc, type: 3}
       volume: 0
       pitch: 1
       loop: 1
-      source: {fileID: 0}
   - groupName: BGM_LOOP_B
     sounds:
     - name: Base
@@ -275,27 +271,23 @@ MonoBehaviour:
       volume: 1
       pitch: 1
       loop: 1
-      source: {fileID: 0}
     - name: Layer 1
       clip: {fileID: 8300000, guid: f66caa47940012d4ba2d5e71d2550bea, type: 3}
       volume: 0
       pitch: 1
       loop: 1
-      source: {fileID: 0}
     - name: Layer 2
       clip: {fileID: 8300000, guid: 07fb965be1271614781f1c1655058167, type: 3}
       volume: 0
       pitch: 1
       loop: 1
-      source: {fileID: 0}
   - groupName: BGM_Cave_Outro
     sounds:
-    - name: BGM_Cave_Outro
+    - name: Base
       clip: {fileID: 8300000, guid: 30cb27d84d8e1ca4dba722cf69a048e8, type: 3}
       volume: 1
       pitch: 1
       loop: 0
-      source: {fileID: 0}
   sfxGroup:
     groupName: SFX_Global
     sounds:
@@ -304,34 +296,16 @@ MonoBehaviour:
       volume: 1
       pitch: 1
       loop: 0
-      source: {fileID: 0}
     - name: SFX_Hit_Perfect
       clip: {fileID: 8300000, guid: 3c88698a02a248b429ce435451a4729d, type: 3}
       volume: 1
       pitch: 1
       loop: 0
-      source: {fileID: 0}
     - name: SFX_Hit_Miss
       clip: {fileID: 8300000, guid: 7e50b8dc147802349bc0b0c400fdf9bc, type: 3}
       volume: 1
       pitch: 1
       loop: 0
-      source: {fileID: 0}
-  sceneMusicConfigs:
-  - sceneName: 1_MainMenu
-    bpm: 75
-    initialMusicGroupName: Menu
-    introDurationSeconds: 0
-    loopAMusicGroupName: 
-    loopBMusicGroupName: 
-    enableLayering: 0
-  - sceneName: 2_GameScene
-    bpm: 172
-    initialMusicGroupName: BGM_Cave_Intro
-    introDurationSeconds: 22.326
-    loopAMusicGroupName: BGM_LOOP_A
-    loopBMusicGroupName: BGM_LOOP_B
-    enableLayering: 1
 --- !u!4 &1849389568
 Transform:
   m_ObjectHideFlags: 0
@@ -359,7 +333,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b5fd696fa9b83c4593c008608071f51, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  layerFadeTime: 1.5
+  sceneConfigs:
+  - SceneName: 1_MainMenu
+    BPM: 75
+    MusicGroupName: Menu
+    MusicSequence:
+    - Menu
+    EnableLayering: 0
+  - SceneName: 2_GameScene
+    BPM: 172
+    MusicGroupName: BGM_Cave_Intro
+    MusicSequence:
+    - BGM_Cave_Intro
+    - BGM_LOOP_A
+    - BGM_LOOP_B
+    - BGM_Cave_Outro
+    EnableLayering: 1
   baseLayerName: Base
   layer1Name: Layer 1
   layer2Name: Layer 2

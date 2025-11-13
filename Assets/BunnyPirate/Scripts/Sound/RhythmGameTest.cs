@@ -2,13 +2,14 @@ using UnityEngine;
 using System.Collections;
 
 /// <summary>
-/// Test script to simulate player interactions and verify rhythm layer changes.
+/// Test script to simulate player interactions and verify rhythm layer changes and sequence progression.
 /// 
 /// Keys:
-/// 1 = Perfect Hit
-/// 2 = Miss
+/// 1 = Perfect Hit (activates Layer 1, increments Combo)
+/// 2 = Miss (mutes Layer 1, resets Combo)
 /// 
-/// The script manages the logic for the three layers: Base, Layer 1 (on Hit), Layer 2 (on Combo).
+/// Context Menu:
+/// "Skip to Next Music Group" = Forces transition to the next music segment.
 /// </summary>
 public class RhythmGameTest : MonoBehaviour
 {
@@ -19,7 +20,7 @@ public class RhythmGameTest : MonoBehaviour
     private int _currentCombo = 0;
     private const int Layer2Threshold = 10; // Combo threshold to activate Layer 2
     private bool _isLayer1Active = false; // The state of Layer 1 (active or muted)
-    private bool _isLayer2Active = false; // NEW: The state of Layer 2 (active or muted)
+    private bool _isLayer2Active = false; // The state of Layer 2 (active or muted)
 
     // --- Demo SFX Names (Must match names in AudioManager) ---
     private const string PerfectHitSFX = "SFX_Hit_Perfect"; 
@@ -42,7 +43,7 @@ public class RhythmGameTest : MonoBehaviour
         // Layer 2 must start muted (combo 0)
         HandleLayer2(false); 
         
-        Debug.Log("Test system initialized. Use '1' for Perfect Hit, '2' for Miss.");
+        Debug.Log("Test system initialized. Use '1' for Perfect Hit, '2' for Miss. Right-click this component in the Inspector to skip music.");
     }
 
     void Update()
@@ -80,11 +81,6 @@ public class RhythmGameTest : MonoBehaviour
     /// </summary>
     private void HandleHit(bool isHit)
     {
-        // Rule 1: Base Layer (Base)
-        // The Base layer should always be playing (volume 1.0f).
-        // If it has a volume of 1.0 in the AudioManager, it starts with the loop and remains playing.
-        // No action is necessary here.
-        
         // Rule 2: Layer 1 Layer (Layer 1)
         // Plays EXCEPT when the player completely Misses.
         
@@ -94,7 +90,7 @@ public class RhythmGameTest : MonoBehaviour
         {
             _rhythmManager.UpdateLayerVolume(_rhythmManager.layer1Name, targetVolumeL1);
             _isLayer1Active = isHit;
-            Debug.Log($"Layer 1: Changing to Volume {targetVolumeL1}.");
+            Debug.Log($"Layer 1: Changing to Volume {targetVolumeL1}. Current Combo: {_currentCombo}");
         }
     }
 
@@ -108,12 +104,8 @@ public class RhythmGameTest : MonoBehaviour
         
         float targetVolumeL2 = thresholdReached ? 1.0f : 0.0f;
         
-        // CS0119 error fix: Using the internal state variable (_isLayer2Active)
-        // to check if the current state is different from the target state.
         if (thresholdReached != _isLayer2Active)
         {
-            // Since we cannot read the AudioSource state here,
-            // we rely on the update call to perform the transition.
             _rhythmManager.UpdateLayerVolume(_rhythmManager.layer2Name, targetVolumeL2);
             
             // Update internal state
@@ -128,6 +120,28 @@ public class RhythmGameTest : MonoBehaviour
     private void SimulateSFX(string sfxName)
     {
         if (_audioManager == null) return;
+        // Assuming PlayNormalSound is implemented in AudioManager to play one-shot clips
         _audioManager.PlayNormalSound(sfxName);
+    }
+    
+    // --- Testing / Manual Sequencing API ---
+
+    [ContextMenu("Skip to Next Music Group")]
+    /// <summary>
+    /// Manually advances the music sequence. This is typically used to transition 
+    /// out of a looping track (Loop = true) into the next segment (e.g., Boss Phase 2 or Outro).
+    /// </summary>
+    public void SkipMusicGroup()
+    {
+        if (_rhythmManager != null)
+        {
+            Debug.Log("MANUAL TEST: Forcing transition to the next music group in the sequence.");
+            // We call StartNextGroup directly, which handles stopping the old monitor and starting the new group.
+            _rhythmManager.StartNextGroup(); 
+        }
+        else
+        {
+            Debug.LogError("RhythmManager is null. Cannot skip music group.");
+        }
     }
 }

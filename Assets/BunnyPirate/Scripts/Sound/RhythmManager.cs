@@ -1,167 +1,206 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using System;
+using System.Collections.Generic;
 using System.Collections;
 using System.Linq;
-using UnityEngine.SceneManagement;
-using System.Collections.Generic;
 
-/// <summary>
-/// Manages the game's rhythmic synchronization, BPM, and musical section changes.
-/// </summary>
 public class RhythmManager : MonoBehaviour
 {
+    // Singleton Instance
     public static RhythmManager instance;
 
-    // --- Configuration (visible in the Inspector) ---
-    [Header("Layer Configuration")]
-    [Tooltip("Fade duration for layer volume changes.")]
-    public float layerFadeTime = 0.5f;
-    
-    [Tooltip("Name of the base layer (must match the Sound name in AudioManager).")]
-    public string baseLayerName = "Base"; // New name for the always-active layer
-    
-    [Tooltip("Name of Layer 1, disabled only on Miss.")]
-    public string layer1Name = "Layer 1";
-    
-    [Tooltip("Name of Layer 2, activated only by the Perfect combo.")]
+    // --- Configuration ---
+    [Header("Rhythm Configuration")]
+    [Tooltip("List of music configurations per scene.")]
+    public List<SceneMusicConfig> sceneConfigs = new List<SceneMusicConfig>();
+
+    [Header("Layering Names")]
+    [Tooltip("Name of the track that always plays. This track is monitored for sequence transitions.")]
+    public string baseLayerName = "Base"; 
+    [Tooltip("Name of the track that plays except when the player Misses.")]
+    public string layer1Name = "Layer 1"; 
+    [Tooltip("Name of the track that plays only on Perfect Combo.")]
     public string layer2Name = "Layer 2"; 
     
     // --- Internal State ---
     private AudioManager _audioManager;
-    private SceneMusicMapping _currentSceneConfig;
-    private double _secondsPerBeat;
-    private double _musicStartDSPTime; // Start time of the track according to Unity's DSP
+    private SceneMusicConfig _currentGroupConfig;
+    private bool _layeringEnabled = false;
     
+    // --- Sequencing State ---
+    private List<string> _musicSequence;
+    private int _currentGroupIndex = -1;
+    private Coroutine _monitorCoroutine;
+
+    // --- Initialization & Scene Management ---
+
     void Awake()
     {
-        // Singleton Implementation
         if (instance == null)
         {
             instance = this;
             DontDestroyOnLoad(gameObject);
+            SceneManager.sceneLoaded += OnSceneLoaded;
         }
-        else
+        else if (instance != this)
         {
-            Destroy(gameObject);
-            return;
+            Destroy(gameObject); 
+            return; 
         }
 
-        // Find the AudioManager (CS0618 warning fix)
-        _audioManager = FindFirstObjectByType<AudioManager>();
+        _audioManager = AudioManager.instance;
         if (_audioManager == null)
         {
-            Debug.LogError("RhythmManager requires an AudioManager instance in the scene.");
+            Debug.LogError("AudioManager instance is null. Please ensure AudioManager initializes before RhythmManager.");
         }
-
-        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     void OnDestroy()
     {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
+        if (instance == this)
+        {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+        }
+        if (_monitorCoroutine != null)
+        {
+            StopCoroutine(_monitorCoroutine);
+        }
     }
-    
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        // Initialize the rhythm system for the new scene
-        InitializeRhythmSystem();
-    }
-    
-    // --- Main Rhythm Logic ---
 
-    private void InitializeRhythmSystem()
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         if (_audioManager == null)
         {
-            Debug.LogError("Cannot initialize rhythm system: AudioManager is missing.");
-            return;
-        }
-
-        // Get the current scene configuration
-        _currentSceneConfig = _audioManager.GetCurrentSceneConfig();
-        
-        if (_currentSceneConfig == null)
-        {
-            Debug.LogWarning("No scene music configuration found. Using default BPM (120).");
-            // Use a default BPM if configuration is missing
-            _secondsPerBeat = 60.0 / 120.0;
-            return;
+            _audioManager = AudioManager.instance;
         }
         
-        float currentBPM = _currentSceneConfig.bpm;
-        _secondsPerBeat = 60.0 / currentBPM;
-        
-        Debug.Log($"Rhythm Manager Initialized. BPM: {currentBPM} ({_secondsPerBeat:F2} seconds per beat). Layering Enabled: {_currentSceneConfig.enableLayering}");
-
-        // Start the music sequence management coroutine (Horizontal transition)
-        StartCoroutine(MusicSequenceHandler());
+        _currentGroupConfig = sceneConfigs.Find(config => config.SceneName == scene.name);
+        InitializeRhythmSystem(scene.name);
     }
 
-    /// <summary>
-    /// Manages the Intro -> Loop A sequence. (Horizontal Transition)
-    /// </summary>
-    private IEnumerator MusicSequenceHandler()
+    private void InitializeRhythmSystem(string sceneName)
     {
-        // Wait for one frame to ensure AudioManager has finished scheduling the start
-        yield return null; 
-        _musicStartDSPTime = _audioManager.GetMusicStartTimeDSP();
-        
-        float introDuration = _currentSceneConfig.introDurationSeconds;
-        
-        Debug.Log($"[DEBUG] Intro Duration read from configuration: {introDuration:F3} seconds.");
-        
-        if (introDuration > 0)
+        if (_currentGroupConfig == null) 
         {
-            // Calculate the precise DSP time when the intro ends
-            double waitTimeDSP = _musicStartDSPTime + introDuration;
-            
-            // Wait until that time is reached
-            while (AudioSettings.dspTime < waitTimeDSP)
-            {
-                yield return null;
-            }
+             // Fallback configuration (simplified)
+             _currentGroupConfig = new SceneMusicConfig 
+             { 
+                 BPM = 120f, 
+                 MusicGroupName = "BGM_Fallback",
+                 EnableLayering = false,
+                 MusicSequence = new List<string> { "BGM_Fallback" }
+             };
+             Debug.LogWarning($"Music configuration not found for scene '{sceneName}'. Using default fallback: 120 BPM.");
+        }
+        
+        _layeringEnabled = _currentGroupConfig.EnableLayering;
+        _musicSequence = _currentGroupConfig.MusicSequence;
+        _currentGroupIndex = -1; // Reset index for new scene
+        
+        Debug.Log($"Rhythm Manager Initialized. BPM: {_currentGroupConfig.BPM}. Sequence Length: {_musicSequence.Count}");
 
-            // Perform the transition
-            if (!string.IsNullOrEmpty(_currentSceneConfig.loopAMusicGroupName))
-            {
-                RequestMusicGroupSwitch(_currentSceneConfig.loopAMusicGroupName);
-            }
-        }
-        else
+        // Stop any old monitoring before starting the new sequence
+        if (_monitorCoroutine != null)
         {
-            Debug.LogWarning("Invalid Intro Duration (<= 0). No automatic transition scheduled.");
+            StopCoroutine(_monitorCoroutine);
+            _monitorCoroutine = null;
         }
+
+        // Start the first group in the sequence
+        StartNextGroup();
     }
     
     /// <summary>
-    /// Requests the AudioManager to switch music groups on the next beat.
+    /// Starts the next music group in the defined sequence.
     /// </summary>
-    public void RequestMusicGroupSwitch(string groupName)
+    public void StartNextGroup()
     {
-        double currentDSP = AudioSettings.dspTime;
-        double timeSinceStart = currentDSP - _musicStartDSPTime;
-
-        // Calculate the number of full beats that have passed
-        double totalBeatsPassed = timeSinceStart / _secondsPerBeat;
+        // IMPORTANT: Stop any previous monitoring, especially if the current track was looping
+        // and is being skipped manually via RhythmGameTest.
+        if (_monitorCoroutine != null)
+        {
+            StopCoroutine(_monitorCoroutine);
+            _monitorCoroutine = null;
+        }
         
-        // Calculate the DSP time of the next beat (for a synchronized transition)
-        double nextBeatDSP = _musicStartDSPTime + (Mathf.Ceil((float)totalBeatsPassed) * _secondsPerBeat);
-        
-        Debug.Log($"Transition requested from '{_currentSceneConfig.initialMusicGroupName}' to '{groupName}'. Scheduled at dspTime {nextBeatDSP:F3}.");
+        // 1. Advance Index
+        _currentGroupIndex++;
 
-        _audioManager.SwitchGroupScheduled(_currentSceneConfig.initialMusicGroupName, groupName, nextBeatDSP);
+        // 2. Check for End of Sequence
+        if (_currentGroupIndex >= _musicSequence.Count)
+        {
+            Debug.Log("End of music sequence reached. Stopping music.");
+            // Stop all music for clean shutdown
+            _audioManager.StopAllMusicGroups();
+            return; 
+        }
+
+        string nextGroupName = _musicSequence[_currentGroupIndex];
+        Debug.Log($"Starting Music Group: {nextGroupName} (Index {_currentGroupIndex} / {_musicSequence.Count - 1})");
+
+        // 3. Start the Group and get the AudioSource to monitor
+        if (_audioManager != null)
+        {
+            AudioSource baseSource = _audioManager.StartGroupImmediate(nextGroupName, baseLayerName);
+            
+            // 4. Start monitoring for end of clip IF the clip is not set to loop.
+            if (baseSource != null && baseSource.clip != null && !baseSource.loop)
+            {
+                _monitorCoroutine = StartCoroutine(MonitorMusicEnd(baseSource));
+            }
+            else if (baseSource != null && baseSource.loop)
+            {
+                Debug.LogWarning($"Group {nextGroupName} base layer is looping. Sequence will stop here unless explicitly triggered by external game logic (e.g., SkipToNextGroup in RhythmGameTest).");
+            }
+        }
     }
 
     /// <summary>
-    /// Updates the volume of a musical layer (Vertical Layering).
+    /// Monitors the base layer's AudioSource and triggers the next group when it stops playing.
     /// </summary>
+    private IEnumerator MonitorMusicEnd(AudioSource source)
+    {
+        // Wait until the source is no longer playing
+        yield return new WaitWhile(() => source.isPlaying);
+        
+        Debug.Log($"Clip ended naturally. Triggering next group.");
+
+        // Clear the coroutine reference before starting the next group
+        _monitorCoroutine = null; 
+        
+        // Transition to the next group
+        StartNextGroup();
+    }
+
+    // --- Layering Management ---
+    
     public void UpdateLayerVolume(string layerName, float targetVolume)
     {
-        if (_currentSceneConfig == null || !_currentSceneConfig.enableLayering || _audioManager == null) return;
+        if (!_layeringEnabled || _audioManager == null) return;
         
-        // Assume the music group to modify is the loop A group (the currently playing group)
-        string currentGroupName = _currentSceneConfig.loopAMusicGroupName; 
+        const float fadeTime = 0.2f; 
         
-        // Call the AudioManager's fade method
-        _audioManager.SetLayerVolume(currentGroupName, layerName, targetVolume, layerFadeTime);
+        _audioManager.SetLayerVolume(layerName, targetVolume, fadeTime);
+    }
+    
+    // --- Helper Methods ---
+    public float GetSecondsPerBeat()
+    {
+        return 60f / _currentGroupConfig.BPM;
+    }
+
+    // Configuration structure
+    [Serializable]
+    public class SceneMusicConfig
+    {
+        public string SceneName;
+        public float BPM = 120.0f;
+        [Tooltip("DEPRECATED: Use MusicSequence instead for sequencing.")]
+        public string MusicGroupName; 
+        [Tooltip("The ordered list of music groups to play sequentially.")]
+        public List<string> MusicSequence = new List<string>();
+        [Tooltip("Check if the music uses the Layering system (Layer 1, Layer 2, etc.).")]
+        public bool EnableLayering = false;
     }
 }
