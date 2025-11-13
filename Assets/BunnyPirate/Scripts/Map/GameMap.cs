@@ -79,9 +79,8 @@ public class GameMap : MonoBehaviour
 
   public void ConfirmMapSpace()
   {
-    if (_selectedMapSpace != null)
-      MovePlayerShipTo(_selectedMapSpace);
-
-    Debug.Log("Moving player, Enter sequence 2 from here?");
+    if (_selectedMapSpace != null && _selectedMapSpace != GetCurrentSpace())
+    GameManager.SwitchToSequence(1);
+    MovePlayerShipTo(_selectedMapSpace);
   }
 }

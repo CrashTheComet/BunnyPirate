@@ -19,4 +19,18 @@ public class Sequence1Controller : SequenceController
     _gameMap.MovePlayerShipTo(_gameMap.GetInitialSpace());
     _sequenceView.ShowGameMap(false);
   }
+
+  public override void EnterSequence()
+  {
+    base.EnterSequence();
+    _sequenceView.gameObject.SetActive(true);
+    PlayerShip.MoveTo(Vector3.zero);
+  }
+
+  public override void ExitSequence()
+  {
+    base.ExitSequence();
+    _sequenceView.ShowGameMap(false);
+    _sequenceView.gameObject.SetActive(false);
+  }
 }

@@ -10,14 +10,16 @@ public class NotesTrack : MonoBehaviour
   [SerializeField] Transform[] _laneTransforms;
   [SerializeField] Note[] _trackNotes;
 
-  [SerializeField] float _trackSpeed = 1;
+  [SerializeField] Transform barTransform;
 
-  List<Note>[] _activeNotes;
+  [SerializeField] float _trackSpeed = 1;
+  float playedTime = -2f;
+
+  TrackEvent loadedEvent;
+
+  List<Note> _displayedNotes = new List<Note>();
 
   List<Note> _animatedNotes = new List<Note>();
-
-  Vector3 trackHalfScale => transform.lossyScale / 2;
-
   NotePool _notePool;
 
   public event Action OnNoteHit;
@@ -26,10 +28,12 @@ public class NotesTrack : MonoBehaviour
 
   void Awake()
   {
+    //pull templates for instantiation
     GameObject templateObject = GameObject.Find("NoteTemplates");
     Note[] templateNotes = templateObject.GetComponentsInChildren<Note>();
     _trackNotes = new Note[templateNotes.Length];
 
+    //configure and disable template objects
     for (int i = 0; i < templateNotes.Length; i++)
     {
       _trackNotes[i] = templateNotes[i];
@@ -39,10 +43,6 @@ public class NotesTrack : MonoBehaviour
 
     InitializeNotePool();
 
-    _activeNotes = new List<Note>[_laneTransforms.Length];
-    for (int i = 0; i < _activeNotes.Length; i++)
-      _activeNotes[i] = new List<Note>();
-
     Inputs.onNoteStrike1 += () => { PassInput(0); };
     Inputs.onNoteStrike2 += () => { PassInput(1); };
     Inputs.onNoteStrike3 += () => { PassInput(2); };
@@ -51,42 +51,9 @@ public class NotesTrack : MonoBehaviour
   void Update()
   {
     float deltaTime = Time.deltaTime;
-
-    MoveNotesDown(deltaTime);
     Animate(deltaTime);
-  }
-
-  private void DropNote(int i)
-  {
-    if (!Utility.InRange(_laneTransforms, i))
-    {
-      Debug.LogError($"Cannot drop note! Index out of range!");
-      Debug.LogError($"index i {i} max {_trackNotes.Length - 1} or {_laneTransforms.Length - 1}");
-      return;
-    }
-
-    if (_notePool == null)
-      InitializeNotePool();
-
-    Note newNote = GetNewNote(i);
-    newNote.transform.position = PositionOnTrack(i, 0);
-    _activeNotes[i].Add(newNote);
-  }
-
-  private void DropNote(int i, int n)
-  {
-    if (!Utility.InRange(_laneTransforms, n) || !Utility.InRange(_trackNotes, i))
-    {
-      Debug.LogError("Cannot drop note! Index out of range!");
-      Debug.LogError($"index i {i} max {_trackNotes.Length - 1}, index n {n} max {_laneTransforms.Length - 1}");
-      return;
-    }
-    if (_notePool == null)
-      InitializeNotePool();
-
-    Note newNote = GetNewNote(n);
-    newNote.transform.position = PositionOnTrack(i, 0);
-    _activeNotes[n].Add(newNote);
+    DisplayNotes(playedTime);
+    playedTime += deltaTime;
   }
 
   private void InitializeNotePool()
@@ -115,67 +82,52 @@ public class NotesTrack : MonoBehaviour
       note.gameObject.SetActive(true);
     }
 
+    _displayedNotes.Add(note);
     return note;
   }
 
-  private void Recycle(Note note)
+  private void RecycleNote(Note note)
   {
     if (_notePool == null)
       InitializeNotePool();
 
+    _displayedNotes.Remove(note);
     _notePool.Push(note);
   }
 
-  private void MoveNotesDown(float deltaTime)
+  private void RecycleAllNotes()
   {
-    for (int i = 0; i < _activeNotes.Length; i++)
-      for (int n = 0; n < _activeNotes[i].Count; n++)
-      {
-        Note currentNote = _activeNotes[i][n];
-        currentNote.TrackPosition += deltaTime * _trackSpeed;
-        currentNote.transform.position = PositionOnTrack(i, currentNote.TrackPosition);
-        if (currentNote.TrackPosition > 1)
-        {
-          OnNoteMiss?.Invoke();
-          _activeNotes[i].Remove(currentNote);
-          Recycle(currentNote);
-        }
-      }
+    for (int i = 0; i < _displayedNotes.Count; i++)
+      RecycleNote(_displayedNotes[i]);
+  }
+
+  public void LoadEvent(TrackEvent trackEvent)
+  {
+    loadedEvent = trackEvent;
+    DisplayNotes(0);
+  }
+
+  private void DisplayNotes(float time)
+  {
+    if (loadedEvent == null)
+      return;
+
+    RecycleAllNotes();
+
+    foreach (EventNote note in loadedEvent.AllNotes)
+    {
+      Note newNote = GetNewNote(note.lane);
+      newNote.transform.position = new Vector3(
+_laneTransforms[note.lane].transform.position.x,
+barTransform.position.y + note.timeStamp + time * -1,
+0
+      );
+    }
   }
 
   private void PassInput(int i)
   {
-    if (!Utility.InRange(_laneTransforms, i))
-    {
-      Debug.LogError("Cannot pass input! Index out of range!");
-      Debug.LogError($"index i {i} max {_activeNotes.Length - 1}");
-      return;
-    }
 
-    for (int n = 0; n < _activeNotes[i].Count; n++)
-    {
-      Note note = _activeNotes[i][n];
-      if (note.TrackPosition > 0.75f && note.TrackPosition <= 0.9f)
-      {
-        OnNoteHit?.Invoke();
-        _activeNotes[i].Remove(note);
-        Spray(note);
-        return;
-      }
-    }
-    OnBadInput?.Invoke();
-  }
-
-  private Vector3 PositionOnTrack(int i, float t)
-  {
-    if (!Utility.InRange(_laneTransforms, i))
-    {
-      Debug.LogError("Cannot find position! Index out of range!");
-      Debug.LogError($"index i {i} max {_laneTransforms.Length - 1}");
-      return Vector3.zero;
-    }
-    Vector3 topPosition = _laneTransforms[i].position + Vector3.up * trackHalfScale.y;
-    return Vector3.Lerp(topPosition, _laneTransforms[i].position + Vector3.down * trackHalfScale.y, t);
   }
 
   public void Spray(Note note)
@@ -207,7 +159,7 @@ Random.Range(3f, 6f)
       if (note.TrackPosition >= 1f)
       {
         _animatedNotes.Remove(note);
-        Recycle(note);
+        RecycleNote(note);
       }
 
       note.TrackPosition += deltaTime;
