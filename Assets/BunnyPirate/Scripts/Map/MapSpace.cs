@@ -17,7 +17,9 @@ public class MapSpace : MonoBehaviour
   GameMap _gameMap;
   public GameMap GameMap => _gameMap;
 
-  [SerializeField] MapSpace[] connectedSpaces;
+    public MapSpace[] ConnectedSpaces { get => connectedSpaces; }
+
+    [SerializeField] MapSpace[] connectedSpaces;
 
   public void Initialize(GameMap map)
   {
