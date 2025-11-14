@@ -17,7 +17,7 @@ public class NotesTrack : MonoBehaviour
 
   TrackEvent loadedEvent;
 
-  List<Note> _displayedNotes = new List<Note>();
+  List<Note> _scrollingNotes = new List<Note>();
 
   List<Note> _animatedNotes = new List<Note>();
   NotePool _notePool;
@@ -82,23 +82,36 @@ public class NotesTrack : MonoBehaviour
       note.gameObject.SetActive(true);
     }
 
-    _displayedNotes.Add(note);
+    _scrollingNotes.Add(note);
+
+    note.RecycleNextFrame = false;
     return note;
   }
 
   private void RecycleNote(Note note)
   {
+    Debug.Log("recycle");
     if (_notePool == null)
       InitializeNotePool();
 
-    _displayedNotes.Remove(note);
     _notePool.Push(note);
   }
 
-  private void RecycleAllNotes()
+  private void RecycleMarkedNotes()
   {
-    for (int i = 0; i < _displayedNotes.Count; i++)
-      RecycleNote(_displayedNotes[i]);
+    for (int i = 0; i < _scrollingNotes.Count; i++)
+      if (_scrollingNotes[i].RecycleNextFrame)
+      {
+        RecycleNote(_scrollingNotes[i]);
+        _scrollingNotes.Remove(_scrollingNotes[i]);
+      }
+
+    for (int i = 0; i < _animatedNotes.Count; i++)
+      if (_animatedNotes[i].RecycleNextFrame)
+      {
+        RecycleNote(_animatedNotes[i]);
+        _animatedNotes.Remove(_animatedNotes[i]);
+      }
   }
 
   public void LoadEvent(TrackEvent trackEvent)
@@ -112,34 +125,60 @@ public class NotesTrack : MonoBehaviour
     if (loadedEvent == null)
       return;
 
-    RecycleAllNotes();
+    RecycleMarkedNotes();
 
-    foreach (EventNote note in loadedEvent.AllNotes)
+    List<EventNote> notes = loadedEvent.eventNotes;
+    for (int i = 0; i < notes.Count; i++)
     {
-      Note newNote = GetNewNote(note.lane);
-      newNote.transform.position = new Vector3(
-_laneTransforms[note.lane].transform.position.x,
-barTransform.position.y + note.timeStamp + time * -1,
-0
-      );
+      if (i < _scrollingNotes.Count)
+      {
+        _scrollingNotes[i].transform.position = new Vector3(
+        _laneTransforms[notes[i].lane].transform.position.x,
+        barTransform.position.y + notes[i].timeStamp + time * _trackSpeed * -1,
+        0
+              );
+      }
+      else
+      {
+        Note newNote = GetNewNote(notes[i].lane);
+        newNote.eventNote = notes[i];
+        newNote.transform.position = new Vector3(
+                _laneTransforms[notes[i].lane].transform.position.x,
+                barTransform.position.y + notes[i].timeStamp + time * _trackSpeed * -1,
+                0
+                      );
+      }
     }
+
+    Debug.Log(_scrollingNotes.Count);
   }
 
-  private void PassInput(int i)
+  private void PassInput(int lane)
   {
-
+    for (int i = 0; i < _scrollingNotes.Count; i++)
+    {
+      if (Mathf.Abs(_scrollingNotes[i].transform.position.y - barTransform.position.y) < 0.125f)
+      {
+        loadedEvent.eventNotes.Remove(_scrollingNotes[i].eventNote);
+        Spray(_scrollingNotes[i]);
+      }
+    }
   }
 
   public void Spray(Note note)
   {
+    if (_scrollingNotes.Contains(note))
+      _scrollingNotes.Remove(note);
+
+    _animatedNotes.Add(note);
+
     note.transform.SetParent(null);
-    note.TrackPosition = 0;
+    note.AnimatedTime = 0;
     note.angularVelocity = Random.Range(-35f, 35f);
     note.SprayVelocity = new Vector2(
 Random.Range(-3f, 3f),
 Random.Range(3f, 6f)
     );
-    _animatedNotes.Add(note);
   }
 
   public void Animate(float deltaTime)
@@ -156,13 +195,12 @@ Random.Range(3f, 6f)
       note.angularVelocity = Mathf.MoveTowards(note.angularVelocity, 0, deltaTime);
 
 
-      if (note.TrackPosition >= 1f)
+      if (note.AnimatedTime >= 1f)
       {
-        _animatedNotes.Remove(note);
-        RecycleNote(note);
+        note.RecycleNextFrame = true;
       }
 
-      note.TrackPosition += deltaTime;
+      note.AnimatedTime += deltaTime;
     }
   }
 }

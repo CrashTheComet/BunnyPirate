@@ -52,15 +52,18 @@ public class RhythmManager : MonoBehaviour
             Destroy(gameObject); 
             return; 
         }
-
-        _audioManager = AudioManager.instance;
-        if (_audioManager == null)
-        {
-            Debug.LogError("AudioManager instance is null. Please ensure AudioManager initializes before RhythmManager.");
-        }
     }
 
-    void OnDestroy()
+  void Start()
+  {
+    _audioManager = AudioManager.instance;
+    if (_audioManager == null)
+    {
+      Debug.LogError("AudioManager instance is null. Please ensure AudioManager initializes before RhythmManager.");
+    }
+  }
+
+  void OnDestroy()
     {
         if (instance == this)
         {
@@ -147,6 +150,7 @@ public class RhythmManager : MonoBehaviour
         // 3. Start the Group and get the AudioSource to monitor
         if (_audioManager != null)
         {
+          Debug.Log(nextGroupName);
             AudioSource baseSource = _audioManager.StartGroupImmediate(nextGroupName, baseLayerName);
             
             if (baseSource != null)

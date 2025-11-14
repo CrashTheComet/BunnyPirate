@@ -13,7 +13,7 @@ public class NotePool : MonoBehaviour
         Note note = _notes[i];
         note.gameObject.SetActive(true);
         note.transform.SetParent(null);
-        note.TrackPosition = 0;
+        note.AnimatedTime = 0;
         note.transform.rotation = Quaternion.Euler(Vector3.zero);
         _notes.Remove(_notes[i]);
         return note;
