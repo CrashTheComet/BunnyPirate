@@ -1,0 +1,195 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4915598185032011848
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7488928451949122134}
+  - component: {fileID: 5171391029573746974}
+  - component: {fileID: 1711005368997280274}
+  - component: {fileID: 4592537332674323655}
+  - component: {fileID: 5272540680710598157}
+  m_Layer: 0
+  m_Name: AudioManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7488928451949122134
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4915598185032011848}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5171391029573746974
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4915598185032011848}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fd3326cc9d39814298f90fddc76a1d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  masterMixer: {fileID: 24100000, guid: 75ff97dfc02c5d34990e41a0b8968098, type: 2}
+  masterVolume: 1
+  musicGroups:
+  - groupName: Menu
+    sounds:
+    - name: BGM_MenuV1
+      clip: {fileID: 8300000, guid: f6d7e6c5360ef9141874dedf4383d26b, type: 3}
+      outputMixerGroup: {fileID: -6741709784615043128, guid: 75ff97dfc02c5d34990e41a0b8968098, type: 2}
+      volume: 1
+      pitch: 1
+      loop: 1
+  - groupName: BGM_Cave_Intro
+    sounds:
+    - name: Base
+      clip: {fileID: 8300000, guid: c29a3ae53e022d74f84135f25236b61a, type: 3}
+      outputMixerGroup: {fileID: -6741709784615043128, guid: 75ff97dfc02c5d34990e41a0b8968098, type: 2}
+      volume: 1
+      pitch: 1
+      loop: 0
+  - groupName: BGM_LOOP_A
+    sounds:
+    - name: Base
+      clip: {fileID: 8300000, guid: 7576c9fdc9528ce46b950ad49fde1e1c, type: 3}
+      outputMixerGroup: {fileID: 8244899541204027478, guid: 75ff97dfc02c5d34990e41a0b8968098, type: 2}
+      volume: 1
+      pitch: 1
+      loop: 1
+    - name: Layer 1
+      clip: {fileID: 8300000, guid: 049137acf4c241849889dac27765bf6f, type: 3}
+      outputMixerGroup: {fileID: 5354395081224667101, guid: 75ff97dfc02c5d34990e41a0b8968098, type: 2}
+      volume: 0
+      pitch: 1
+      loop: 1
+    - name: Layer 2
+      clip: {fileID: 8300000, guid: caa837451fcdad742a811acd2edd64fc, type: 3}
+      outputMixerGroup: {fileID: 5900426622068020093, guid: 75ff97dfc02c5d34990e41a0b8968098, type: 2}
+      volume: 0
+      pitch: 1
+      loop: 1
+  - groupName: BGM_LOOP_B
+    sounds:
+    - name: Base
+      clip: {fileID: 8300000, guid: ce4234b65136a8b4ead7b7ea5868880d, type: 3}
+      outputMixerGroup: {fileID: 8244899541204027478, guid: 75ff97dfc02c5d34990e41a0b8968098, type: 2}
+      volume: 1
+      pitch: 1
+      loop: 1
+    - name: Layer 1
+      clip: {fileID: 8300000, guid: f66caa47940012d4ba2d5e71d2550bea, type: 3}
+      outputMixerGroup: {fileID: 5354395081224667101, guid: 75ff97dfc02c5d34990e41a0b8968098, type: 2}
+      volume: 0
+      pitch: 1
+      loop: 1
+    - name: Layer 2
+      clip: {fileID: 8300000, guid: 07fb965be1271614781f1c1655058167, type: 3}
+      outputMixerGroup: {fileID: 5900426622068020093, guid: 75ff97dfc02c5d34990e41a0b8968098, type: 2}
+      volume: 0
+      pitch: 1
+      loop: 1
+  - groupName: BGM_Cave_Outro
+    sounds:
+    - name: Base
+      clip: {fileID: 8300000, guid: 30cb27d84d8e1ca4dba722cf69a048e8, type: 3}
+      outputMixerGroup: {fileID: -6741709784615043128, guid: 75ff97dfc02c5d34990e41a0b8968098, type: 2}
+      volume: 1
+      pitch: 1
+      loop: 0
+  sfxGroup:
+    groupName: SFX_Global
+    sounds:
+    - name: SFX_Normal
+      clip: {fileID: 8300000, guid: 94ac34d627534cb408c591cb1ab4baa7, type: 3}
+      outputMixerGroup: {fileID: 0}
+      volume: 1
+      pitch: 1
+      loop: 0
+    - name: SFX_Hit_Perfect
+      clip: {fileID: 8300000, guid: 3c88698a02a248b429ce435451a4729d, type: 3}
+      outputMixerGroup: {fileID: 0}
+      volume: 1
+      pitch: 1
+      loop: 0
+    - name: SFX_Hit_Miss
+      clip: {fileID: 8300000, guid: 7e50b8dc147802349bc0b0c400fdf9bc, type: 3}
+      outputMixerGroup: {fileID: 0}
+      volume: 1
+      pitch: 1
+      loop: 0
+--- !u!114 &1711005368997280274
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4915598185032011848}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b5fd696fa9b83c4593c008608071f51, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  sceneConfigs:
+  - SceneName: 1_MainMenu
+    BPM: 75
+    MusicGroupName: Menu
+    MusicSequence:
+    - Menu
+    EnableLayering: 0
+  - SceneName: 2_GameScene
+    BPM: 172
+    MusicGroupName: BGM_Cave_Intro
+    MusicSequence:
+    - BGM_Cave_Intro
+    - BGM_LOOP_A
+    - BGM_LOOP_B
+    - BGM_Cave_Outro
+    EnableLayering: 1
+  baseLayerName: Base
+  layer1Name: Layer 1
+  layer2Name: Layer 2
+--- !u!114 &4592537332674323655
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4915598185032011848}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8fa2276e29196441afc86c6637f1218, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+--- !u!114 &5272540680710598157
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4915598185032011848}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a5027b9d728e55429faa8db67d26cd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NotesTrack
+  _laneTransforms: []
+  _trackNotes: []
+  _trackSpeed: 1
