@@ -4,6 +4,8 @@ public class Sequence2Controller : SequenceController
 {
   [SerializeField] NotesTrack _notesTrack;
 
+  [SerializeField] TrackEventGenerator trackEventGeneratorTemp;
+
   float playedTime = 0;
 
   void Awake()
@@ -28,14 +30,6 @@ public class Sequence2Controller : SequenceController
     base.EnterSequence();
     PlayerShip.MoveToInstantly(Vector3.left * 2.5f);
     _notesTrack.gameObject.SetActive(true);
-    _notesTrack.LoadEvent(new TrackEvent(30, 90, new EventNote[]
-    {
-      new EventNote(1, 0),
-      new EventNote(1, 1),
-new EventNote(1, 2),
-new EventNote(1, 3),
-new EventNote(1, 4),
-new EventNote(1, 5)
-    }));
+    _notesTrack.LoadEvent(trackEventGeneratorTemp.GetNew());
   }
 }

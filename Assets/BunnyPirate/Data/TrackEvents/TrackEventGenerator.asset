@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 123326208c81d374982ba00d4a76f6b2, type: 3}
+  m_Name: TrackEventGenerator
+  m_EditorClassIdentifier: Assembly-CSharp::TrackEventGenerator
+  bpm: 180
+  noteLayers:
+  - notes:
+    - lane: 2
+      noteLength: 0
+      measure: 1
+      positionInMeasure: 1
+    - lane: 3
+      noteLength: 0
+      measure: 2
+      positionInMeasure: 1
+    - lane: 1
+      noteLength: 2
+      measure: 2
+      positionInMeasure: 2
+    - lane: 1
+      noteLength: 2
+      measure: 2
+      positionInMeasure: 3
+    - lane: 1
+      noteLength: 2
+      measure: 2
+      positionInMeasure: 4
+    - lane: 2
+      noteLength: 0
+      measure: 3
+      positionInMeasure: 1
+    - lane: 2
+      noteLength: 0
+      measure: 4
+      positionInMeasure: 1
+    - lane: 2
+      noteLength: 0
+      measure: 5
+      positionInMeasure: 1
+    - lane: 2
+      noteLength: 0
+      measure: 6
+      positionInMeasure: 1

@@ -12,7 +12,11 @@ public class NotesTrack : MonoBehaviour
 
   [SerializeField] Transform barTransform;
 
-  [SerializeField] float _trackSpeed = 1;
+  RhythmManager _rhythymManager;
+  AudioManager _audioManager;
+
+
+  [SerializeField] float _scrollSpeed = 1;
   float playedTime = -2f;
 
   TrackEvent loadedEvent;
@@ -42,6 +46,9 @@ public class NotesTrack : MonoBehaviour
     }
 
     InitializeNotePool();
+
+    _rhythymManager = RhythmManager.instance;
+    _audioManager = AudioManager.instance;
 
     Inputs.onNoteStrike1 += () => { PassInput(0); };
     Inputs.onNoteStrike2 += () => { PassInput(1); };
@@ -90,9 +97,14 @@ public class NotesTrack : MonoBehaviour
 
   private void RecycleNote(Note note)
   {
-    Debug.Log("recycle");
     if (_notePool == null)
       InitializeNotePool();
+
+    if (_scrollingNotes.Contains(note))
+      _scrollingNotes.Remove(note);
+
+    if (_animatedNotes.Contains(note))
+      _animatedNotes.Remove(note);
 
     _notePool.Push(note);
   }
@@ -103,14 +115,12 @@ public class NotesTrack : MonoBehaviour
       if (_scrollingNotes[i].RecycleNextFrame)
       {
         RecycleNote(_scrollingNotes[i]);
-        _scrollingNotes.Remove(_scrollingNotes[i]);
       }
 
     for (int i = 0; i < _animatedNotes.Count; i++)
       if (_animatedNotes[i].RecycleNextFrame)
       {
         RecycleNote(_animatedNotes[i]);
-        _animatedNotes.Remove(_animatedNotes[i]);
       }
   }
 
@@ -134,7 +144,7 @@ public class NotesTrack : MonoBehaviour
       {
         _scrollingNotes[i].transform.position = new Vector3(
         _laneTransforms[notes[i].lane].transform.position.x,
-        barTransform.position.y + notes[i].timeStamp + time * _trackSpeed * -1,
+        barTransform.position.y + notes[i].timeStamp * _scrollSpeed - time * _scrollSpeed,
         0
               );
       }
@@ -144,20 +154,18 @@ public class NotesTrack : MonoBehaviour
         newNote.eventNote = notes[i];
         newNote.transform.position = new Vector3(
                 _laneTransforms[notes[i].lane].transform.position.x,
-                barTransform.position.y + notes[i].timeStamp + time * _trackSpeed * -1,
+                (barTransform.position.y + notes[i].timeStamp + time * -1) * _scrollSpeed,
                 0
                       );
       }
     }
-
-    Debug.Log(_scrollingNotes.Count);
   }
 
   private void PassInput(int lane)
   {
     for (int i = 0; i < _scrollingNotes.Count; i++)
     {
-      if (Mathf.Abs(_scrollingNotes[i].transform.position.y - barTransform.position.y) < 0.125f)
+      if (Mathf.Abs(_scrollingNotes[i].transform.position.y - barTransform.position.y) < 0.125f * _scrollSpeed && _scrollingNotes[i].eventNote.lane == lane)
       {
         loadedEvent.eventNotes.Remove(_scrollingNotes[i].eventNote);
         Spray(_scrollingNotes[i]);
