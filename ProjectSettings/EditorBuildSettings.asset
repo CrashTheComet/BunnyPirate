@@ -11,6 +11,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes_Main/2_GameScene.unity
     guid: 41267ed7a6990a44bb4b34d72fe7ed24
+  - enabled: 1
+    path: Assets/Scenes/EchoMPTestScenes/1_MainMenu_Echo.unity
+    guid: f2c5e2e573f66cd41a20ce0e48ed63f4
+  - enabled: 1
+    path: Assets/Scenes/EchoMPTestScenes/2_GameScene_Echo.unity
+    guid: a82633895ddbe6e49a8746b74181d1bf
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0
