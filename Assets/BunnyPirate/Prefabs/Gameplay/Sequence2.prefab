@@ -192,7 +192,7 @@ GameObject:
   - component: {fileID: 6486167925544293394}
   - component: {fileID: 4611496725108408143}
   m_Layer: 0
-  m_Name: TriangleNote
+  m_Name: DNote
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -260,8 +260,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 25
-  m_Sprite: {fileID: 7482667652216324306, guid: 75f5f34dc1b5347e0b8351032682f224, type: 3}
-  m_Color: {r: 1, g: 0.5235849, b: 0.5235849, a: 1}
+  m_Sprite: {fileID: 21300000, guid: 1769c797b84ac1e4e8ad32408072ccd5, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -300,7 +300,7 @@ GameObject:
   - component: {fileID: 1046193737485863557}
   - component: {fileID: 3481751867674975683}
   m_Layer: 0
-  m_Name: CircleNote
+  m_Name: ANote
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -368,12 +368,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 25
-  m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 0.89763993, g: 0.69882524, b: 0.9811321, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c86fda216079c0c4eb1dd525afdcba29, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 66.6, y: 72.1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -408,7 +408,7 @@ GameObject:
   - component: {fileID: 3934272019208544948}
   - component: {fileID: 6237238110157872857}
   m_Layer: 0
-  m_Name: DiamondNote
+  m_Name: SNote
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -476,8 +476,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 25
-  m_Sprite: {fileID: 3625043607559282579, guid: 19fb86013d8c24d6cb8410c0aadf30fa, type: 3}
-  m_Color: {r: 0.48999646, g: 0.6981132, b: 0.43796724, a: 1}
+  m_Sprite: {fileID: 21300000, guid: abaf76b21499f49478ca98948b67ea4c, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -707,9 +707,9 @@ MonoBehaviour:
   - {fileID: 4130016151989665803}
   - {fileID: 6217367064345917321}
   _trackNotes:
-  - {fileID: 8191459697001311552, guid: 87fcd9bb138ba6a4ea35827ee9bb4a43, type: 3}
-  - {fileID: 1634025009608887524, guid: 8903c973b66c6494383dd13a45990891, type: 3}
-  - {fileID: 3705027013243423094, guid: 1ab7110b6457b2744a4defec72004b41, type: 3}
+  - {fileID: 3481751867674975683}
+  - {fileID: 6237238110157872857}
+  - {fileID: 4611496725108408143}
   barTransform: {fileID: 1261272129830315700}
   _scrollSpeed: 3
 --- !u!331 &2222836076133910809
@@ -817,6 +817,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Sequence2Controller
   _notesTrack: {fileID: 4398857922707192372}
+  trackEventGeneratorTemp: {fileID: 11400000, guid: 62b410d4a4ca51c488da40ce2c52306b, type: 2}
 --- !u!1 &7452817595618576099
 GameObject:
   m_ObjectHideFlags: 0
@@ -932,7 +933,7 @@ Transform:
   m_GameObject: {fileID: 9112625783930180322}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.86, y: -2.36, z: 0}
+  m_LocalPosition: {x: 2.99, y: 0.1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
