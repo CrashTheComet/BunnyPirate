@@ -127,6 +127,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 272373263183924199, guid: bf66b957984ef514992ae7f6d556e48b, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 2494609716245831680, guid: 90f50a3f8db0b4a498e79c7b45d3305f, type: 3}
     - target: {fileID: 689085382669539624, guid: bf66b957984ef514992ae7f6d556e48b, type: 3}
       propertyPath: m_Name
       value: EnvironmentManager
@@ -137,11 +141,11 @@ PrefabInstance:
       objectReference: {fileID: 1133636591}
     - target: {fileID: 3180963048119799734, guid: bf66b957984ef514992ae7f6d556e48b, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -6.51
       objectReference: {fileID: 0}
     - target: {fileID: 3180963048119799734, guid: bf66b957984ef514992ae7f6d556e48b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -2
       objectReference: {fileID: 0}
     - target: {fileID: 8204218536271160854, guid: bf66b957984ef514992ae7f6d556e48b, type: 3}
       propertyPath: m_LocalPosition.x
@@ -186,7 +190,19 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 689085382669539624, guid: bf66b957984ef514992ae7f6d556e48b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2091239242}
+    - targetCorrespondingSourceObject: {fileID: 5383201950277152618, guid: bf66b957984ef514992ae7f6d556e48b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1871623197}
+    - targetCorrespondingSourceObject: {fileID: 5383201950277152618, guid: bf66b957984ef514992ae7f6d556e48b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1871623196}
+    - targetCorrespondingSourceObject: {fileID: 5383201950277152618, guid: bf66b957984ef514992ae7f6d556e48b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1871623198}
   m_SourcePrefab: {fileID: 100100000, guid: bf66b957984ef514992ae7f6d556e48b, type: 3}
 --- !u!114 &469308229 stripped
 MonoBehaviour:
@@ -293,7 +309,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &649322020
 Transform:
   m_ObjectHideFlags: 0
@@ -331,6 +347,72 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5096ca62e6763f34fb5ba1907879146c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameMap
+--- !u!1 &1871623194 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5383201950277152618, guid: bf66b957984ef514992ae7f6d556e48b, type: 3}
+  m_PrefabInstance: {fileID: 240313923}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1871623196
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1871623194}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed8b1ae4e4e52b34ea557c1c11e076fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.2D.Animation.Runtime::UnityEngine.U2D.Animation.SpriteResolver
+  m_CategoryHash: 0.009161512
+  m_labelHash: 1.4188446e-10
+  m_SpriteKey: 0
+  m_SpriteHash: 176558032
+--- !u!114 &1871623197
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1871623194}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c29cff538c195c249b69c6f2236de67b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.2D.Animation.Runtime::UnityEngine.U2D.Animation.SpriteLibrary
+  m_Library: []
+  m_SpriteLibraryAsset: {fileID: 7108339969198208228, guid: 080ef496777a26a489c2f6948209bb0d, type: 3}
+--- !u!114 &1871623198
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1871623194}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bd5153b383d5ab47b0377f7c096cc7a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ShipAnimators
+--- !u!1 &2091239241 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 689085382669539624, guid: bf66b957984ef514992ae7f6d556e48b, type: 3}
+  m_PrefabInstance: {fileID: 240313923}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2091239242
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2091239241}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c29cff538c195c249b69c6f2236de67b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.2D.Animation.Runtime::UnityEngine.U2D.Animation.SpriteLibrary
+  m_Library: []
+  m_SpriteLibraryAsset: {fileID: 0}
 --- !u!1001 &3293411660296026701
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -390,6 +472,10 @@ PrefabInstance:
     - target: {fileID: 7396871699378313592, guid: aa27eb55a84c1714b88387abaf019b56, type: 3}
       propertyPath: m_Name
       value: Sequence2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7396871699378313592, guid: aa27eb55a84c1714b88387abaf019b56, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -559,7 +645,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7108751153240337642, guid: 58c973c3904bdda42b23bb81004ecb8f, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

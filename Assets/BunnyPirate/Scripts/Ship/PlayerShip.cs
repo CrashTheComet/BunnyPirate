@@ -27,6 +27,8 @@ public class PlayerShip : Singleton<PlayerShip>
     spriteRenderer = GetComponent<SpriteRenderer>();
 
     Health = _maxHealth;
+
+    _targetPosition = transform.position;
   }
 
   void Update()
